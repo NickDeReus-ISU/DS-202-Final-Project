@@ -1,8 +1,0 @@
-Deaths in 122 US Cities: https://data.cdc.gov/dataset/Deaths-in-122-U-S-cities-1962-2016-122-Cities-Mort/mr8w-325u/about_data
-	Dataset contains weekly mortality, total, and seperated into age buckets.
-	Keys: Date, City, Region, State.
-
-Daily Temperature and Precipitation Reports: https://www.climate.gov/maps-data/dataset/daily-temperature-and-precipitation-reports-data-tables
-	Might need to create a program to access the API to pull the data we need from this source
-
-Daily Temperature and Precipitation Reports by Zip Code: https://www.climate.gov/maps-data/dataset/past-weather-zip-code-data-table
