@@ -93,7 +93,7 @@ The first step in our data cleaning process will be splitting out the records fr
 Questions to be addressed: Fleshed out project idea
 
 The goal of the project is to see the impact of extreme weather on mortality rates considering different climate regions.
-We aim to be able to answer these 4 questions:
+We aim to be able to answer these 5 questions:
 1. Are there seasonal trends in mortality rates? Do different regions experience these impacts differently?
 
 2. How much of an impact does temperature have on mortality? Do different regions experience these impacts differently?
@@ -102,7 +102,7 @@ We aim to be able to answer these 4 questions:
 
 4. Which kinds of weather events have the greatest impacts on mortality? (Extreme heat, cold, ice, flooding)
 
-5. Define which regions are most affected by certain types of weather? (Which most vulnerable to heat waves and extreme cold)
+5. Define which regions are most affected by certain types of weather? (Which  most vulnerable to heat waves and extreme cold)
 
 ## R Markdown
 
