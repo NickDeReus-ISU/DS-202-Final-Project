@@ -1,0 +1,28 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+This is Nick trying to put together an example of how to arrange the weather data to compare to the deaths data.
+
+```{r}
+mortality <- read.csv("Deaths_in_122_U.S._cities_-_1962-2016._122_Cities_Mortality_Reporting_System_20241019.csv")
+bostonWeather <- read_csv("Boston_USW00014739_1962-2016.csv")
+```
+
+```{r}
+week <- as.Date(cut(bostonWeather$DATE, "week", start.on.monday = FALSE))
+weeklyBostonWeather <- aggregate(TAVG ~ week, bostonWeather, mean)
+
+head(weeklyBostonWeather)
+
+```
+So we can easily cut the weather data down to weekly aggregates, some will be means while others sums or rates.
+
+I haven't yet combined the two dataframes though that is probably trivial.
