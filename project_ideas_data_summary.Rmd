@@ -85,13 +85,13 @@ This is a dataset collected between 1962 and 2016 primarily for tracking influen
 * WDFM - Fastest mile wind direction
 * TSUN - Total sunshine for the period
 
-#### Preparing Our Data
+### Preparing Our Data
 
 We have two major datasets which will be combined. The first is a mortality weekly reports, which is technically a part of influenza tracking reports but it provides detailed general mortality rates. The second is NOAA weather records which records information about climate data specific to certain weather stations.
 
 The first step in our data cleaning process will be splitting out the records from the influenza mortality rates to pull only the relevant pieces of data. Additionally, we may consider chunking this data into months instead of weeks. From this and the second dataset, we will select around ~20 individual cities, representing selected regions within the United States based on climate types. From our weather dataset, we will limit the dataset to only the variables we are most interested in, including high and low temperatures, as well as flooding and freezing rain. The final step for data cleaning will be combining the datasets based on city and date. 
 
-Questions to be addressed: Fleshed out project idea
+## Questions to be addressed: Fleshed out project idea
 
 The goal of the project is to see the impact of extreme weather on mortality rates considering different climate regions.
 We aim to be able to answer these 5 questions:
