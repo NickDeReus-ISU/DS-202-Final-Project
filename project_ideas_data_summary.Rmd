@@ -7,15 +7,17 @@ date: "2024-11-01"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-Research topic (title): Weather and Mortality Analysis
+Research topic (title): **Analysis of the Effect of Weather Events and Climate on General Mortality Rates**
 
 Team members: Madhu Avula, Nick DeReus, Jacob Johnson, Brianna Norman
 
-Data: description of your data set, first data cleaning steps, marginal summaries:
+## Dataset
 
 ### Data Values and Structure
 
 #### Deaths in 122 US Cities
+
+This is a dataset collected between 1962 and 2016 primarily for tracking influenza deaths but it will allow us to explore how weather patterns affect overall mortality rates. We aren't looking to quantify only deaths directly attributed to exposure or heatstroke, we want to see how overall trends are affected by weather events and changing climate.
 
 * Year - 
 * WEEK - 
@@ -26,17 +28,13 @@ Data: description of your data set, first data cleaning steps, marginal summarie
 * All Deaths -
 * <1 year (all cause deaths) -
 * 1-24 years (all cause deaths) -
-* 25-44 years (al lcause deaths) -
+* 25-44 years (all cause deaths) -
 * 45-64 years (all cause deaths) -
 * 65+ years (all cause deaths) - 
 
 #### NOAA CDO Daily Summaries
 
-  This dataset is quite detailed, but we're mostly interested in three variables:
-  
-  1. TAVG - Average temperature.
-  2. TMAX - Maximum Temperature.
-  3. TMIN - Minimum Temperature.
+  This dataset contains detailed daily weather summaries for each weather station in the US, due to data limitations and difficulties with the tool, we will have to limit our use of this dataset to fewer cities than available in our mortality dataset.
 
 * STATION - Identifying weather station code
 * NAME - Weather station name
@@ -87,13 +85,17 @@ Data: description of your data set, first data cleaning steps, marginal summarie
 * WDFM - Fastest mile wind direction
 * TSUN - Total sunshine for the period
 
-We have two major datasets which will be combined. The first is a morbitity and mortality weekly reports, which is technically a part of influenza tracking reports but it also give general mortality rates. The second is NOAA weather records which records information about climate data specific to certain cities.
-The first step in our data cleaning process will be splitting out the records from the influenza mortality rates to pull only the relevant pieces of data. Additionally, we may consider chunking this data into months instead of weeks. From this and the second dataset, we will select around 16-20 individual cities, representing multiple regions within the United States and climate types. From our weather dataset, we will limit the dataset to only the variables we are interested in, including high and low temperatures, as well as flooding and freezing rain. The final step for data cleaning will be combining the datasets based on city and date. 
+#### Preparing Our Data
+
+We have two major datasets which will be combined. The first is a mortality weekly reports, which is technically a part of influenza tracking reports but it provides detailed general mortality rates. The second is NOAA weather records which records information about climate data specific to certain weather stations.
+
+The first step in our data cleaning process will be splitting out the records from the influenza mortality rates to pull only the relevant pieces of data. Additionally, we may consider chunking this data into months instead of weeks. From this and the second dataset, we will select around ~20 individual cities, representing selected regions within the United States based on climate types. From our weather dataset, we will limit the dataset to only the variables we are most interested in, including high and low temperatures, as well as flooding and freezing rain. The final step for data cleaning will be combining the datasets based on city and date. 
 
 Questions to be addressed: Fleshed out project idea
 
 The goal of the project is to see the impact of extreme weather on mortality rates considering different climate regions.
 We aim to be able to answer these 5 questions:
+
 1. Are there seasonal trends in mortality rates? Do different regions experience these impacts differently?
 
 2. How much of an impact does temperature have on mortality? Do different regions experience these impacts differently?
@@ -102,11 +104,6 @@ We aim to be able to answer these 5 questions:
 
 4. Which kinds of weather events have the greatest impacts on mortality? (Extreme heat, cold, ice, flooding)
 
-5. Define which regions are most affected by certain types of weather? (Which  most vulnerable to heat waves and extreme cold)
+5. Define which regions are most affected by certain types of weather? (Which most vulnerable to heat waves and extreme cold)
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
+6. Do each of the above trends hold when pnumonia deaths (flu seasons) are removed?
