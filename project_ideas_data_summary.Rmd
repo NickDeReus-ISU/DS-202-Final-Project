@@ -1,0 +1,109 @@
+---
+title: "project_ideas_and_data_summaries"
+output: html_document
+date: "2024-11-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Research topic (title): **Analysis of the Effect of Weather Events and Climate on General Mortality Rates**
+
+Team members: Madhu Avula, Nick DeReus, Jacob Johnson, Brianna Norman
+
+## Dataset
+
+### Data Values and Structure
+
+#### Deaths in 122 US Cities
+
+This is a dataset collected between 1962 and 2016 primarily for tracking influenza deaths but it will allow us to explore how weather patterns affect overall mortality rates. We aren't looking to quantify only deaths directly attributed to exposure or heatstroke, we want to see how overall trends are affected by weather events and changing climate.
+
+* Year - 
+* WEEK - 
+* Week Ending Date - 
+* State -
+* City -
+* Pnemeumonia Deaths -
+* All Deaths -
+* <1 year (all cause deaths) -
+* 1-24 years (all cause deaths) -
+* 25-44 years (all cause deaths) -
+* 45-64 years (all cause deaths) -
+* 65+ years (all cause deaths) - 
+
+#### NOAA CDO Daily Summaries
+
+  This dataset contains detailed daily weather summaries for each weather station in the US, due to data limitations and difficulties with the tool, we will have to limit our use of this dataset to fewer cities than available in our mortality dataset.
+
+* STATION - Identifying weather station code
+* NAME - Weather station name
+* DATE - Date of summary
+* WT03 - Thunder
+* WT04 - Ice pellets, sleet, snow pellets, or small hail"
+* PRCP - Precipitation
+* WT05 - Hail (may include small hail)
+* WSFM - Fastest mile wind speed
+* WT06 - Glaze or rime
+* WT07 - Dust, volcanic ash, blowing dust, blowing sand, or blowing obstruction
+* WT08 - Smoke or haze
+* SNWD - Snow depth
+* WT09 - Blowing or drifting snow
+* WDF1 - Direction of fastest 1-minute wind
+* WDF2 - Direction of fastest 2-minute wind
+* WDF5 - Direction of fastest 5-second wind
+* WT10 - Tornado, waterspout, or funnel cloud"
+* PGTM - Peak gust time
+* WT11 - High or damaging winds
+* TMAX - Maximum temperature
+* WT13 - Mist
+* FRGT - Top of frozen ground layer
+* WSF2 - Fastest 2-minute wind speed
+* FMTM - Time of fastest mile or fastest 1-minute wind
+* ACMH - Average cloudiness midnight to midnight from manual observations
+* WSF5 - Fastest 5-second wind speed
+* SNOW - Snowfall
+* WDFG - Direction of peak wind gust
+* WT14 - Drizzle
+* ACSH - Average cloudiness sunrise to sunset from manual observations
+* WT15 - Freezing drizzle
+* WT16 - Rain (may include freezing rain, drizzle, and freezing drizzle)"
+* WT17 - Freezing rain
+* WT18 - Snow, snow pellets, snow grains, or ice crystals
+* WT19 - Unknown source of precipitation
+* WSF1 - Fastest 1-minute wind speed
+* AWND - Average wind speed
+* WT21 - Ground fog
+* WSFG - Peak gust wind speed
+* WT22 - Ice fog or freezing fog
+* WT01 - Fog, ice fog, or freezing fog (may include heavy fog)
+* WESD - Water equivalent of snow on the ground
+* WT02 - Heavy fog or heaving freezing fog (not always distinguished from fog)
+* PSUN - Daily percent of possible sunshine for the period
+* TAVG - Average Temperature.
+* TMIN - Minimum temperature
+* WDFM - Fastest mile wind direction
+* TSUN - Total sunshine for the period
+
+### Preparing Our Data
+
+We have two major datasets which will be combined. The first is a mortality weekly reports, which is technically a part of influenza tracking reports but it provides detailed general mortality rates. The second is NOAA weather records which records information about climate data specific to certain weather stations.
+
+The first step in our data cleaning process will be splitting out the records from the influenza mortality rates to pull only the relevant pieces of data. Additionally, we may consider chunking this data into months instead of weeks. From this and the second dataset, we will select around ~20 individual cities, representing selected regions within the United States based on climate types. From our weather dataset, we will limit the dataset to only the variables we are most interested in, including high and low temperatures, as well as flooding and freezing rain. The final step for data cleaning will be combining the datasets based on city and date. 
+
+## Questions to be addressed: Fleshed out project idea
+
+The goal of the project is to see the impact of extreme weather on mortality rates considering different climate regions.
+We aim to be able to answer these 5 questions:
+
+1. Are there seasonal trends in mortality rates? Do different regions experience these impacts differently?
+
+2. How much of an impact does temperature have on mortality? Do different regions experience these impacts differently?
+
+3. Are different age groups affected differently? What age groups are most at risk?
+
+4. Which kinds of weather events have the greatest impacts on mortality? (Extreme heat, cold, ice, flooding)
+
+5. Define which regions are most affected by certain types of weather? (Which most vulnerable to heat waves and extreme cold)
+
+6. Do each of the above trends hold when pnumonia deaths (flu seasons) are removed?
