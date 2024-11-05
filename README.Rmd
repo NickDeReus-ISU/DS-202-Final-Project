@@ -40,11 +40,11 @@ We had to unite multiple datasets to answer these question, one from the CDC whi
 * Week Ending Date - 
 * State -
 * City -
-* Pnemeumonia Deaths -
-* All Deaths -
+* Pneumonia.and.Influenza.Deaths
+* All.Deaths -
 * <1 year (all cause deaths) -
 * 1-24 years (all cause deaths) -
-* 25-44 years (al lcause deaths) -
+* 25-44 years (all cause deaths) -
 * 45-64 years (all cause deaths) -
 * 65+ years (all cause deaths) - 
 

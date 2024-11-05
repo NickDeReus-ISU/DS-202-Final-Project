@@ -6,6 +6,7 @@ output:
 
 ```{r}
 library(tidyverse)
+library(lubridate)
 ```
 
 
@@ -15,14 +16,110 @@ This is Nick trying to put together an example of how to arrange the weather dat
 mortality <- read.csv("Deaths_in_122_U.S._cities_-_1962-2016._122_Cities_Mortality_Reporting_System_20241019.csv")
 bostonWeather <- read_csv("Boston_USW00014739_1962-2016.csv")
 ```
+## Aggregate Daily Weather Data To Weekly Averages
 
 ```{r}
-week <- as.Date(cut(bostonWeather$DATE, "week", start.on.monday = FALSE))
-weeklyBostonWeather <- aggregate(TAVG ~ week, bostonWeather, mean)
+# week <- as.Date(cut(bostonWeather$DATE, "week", start.on.monday = FALSE))
+# weeklyBostonWeather <- aggregate(TAVG ~ week, bostonWeather, mean)
+# 
+# head(weeklyBostonWeather)
 
-head(weeklyBostonWeather)
+bostonWeather$DATE <- ymd(bostonWeather$DATE)
 
+preparedBostonWeather <- bostonWeather %>% mutate(
+  WEEK = week(DATE),
+  Year = year(DATE),
+  TAVG = (TMAX+TMIN)/2
+) %>% 
+  group_by(Year, WEEK)
+
+weeklyBostonWeather <- aggregate(TAVG ~ (Year+WEEK), preparedBostonWeather, mean)
 ```
+
 So we can easily cut the weather data down to weekly aggregates, some will be means while others sums or rates.
 
-I haven't yet combined the two dataframes though that is probably trivial.
+Below are box plots for yearly and weekly average temperature variance.
+
+```{r}
+preparedBostonWeather  %>%
+  ggplot(aes(x = factor(Year), y = TAVG,)) + geom_boxplot()
+```
+
+```{r}
+
+preparedBostonWeather %>% 
+    ggplot(aes(x = factor(WEEK), y = TAVG)) + geom_boxplot()
+```
+## Joining the Two Datasets
+
+Below I demonstrate a process for joining a city's mortality to its weather.
+
+```{r}
+bostonMortality <- mortality[mortality$City == 'Boston',]
+
+```
+```{r}
+merge_list <- list(preparedBostonWeather, mortality)
+
+by = join_by(Year, WEEK == WEEK)
+
+# merge_list %>% reduce(full_join, by = c('Year', 'WEEK'))
+
+joined <- left_join(bostonMortality, weeklyBostonWeather, by)
+
+```
+
+## Some Explorations
+
+First, a basic scatterplot
+
+```{r}
+
+joined %>% ggplot(aes(x = TAVG, y = All.Deaths, color = month(mdy(Week.Ending.Date)))) + geom_point()
+
+
+```
+
+So, that isn't overly useful, we can see that there seems to be a negative correlation between Deaths and Temperature. Below I attempt to constrain it using a rolling average to establish a normal rate of mortality I can compare the weekly mortality to.
+
+The method reveals seasonal effects on mortality.
+
+```{r}
+library(zoo)
+```
+```{r}
+joined %>% mutate(
+  normal_death_rate = rollmean(All.Deaths, 52*3, na.pad = TRUE)
+) %>%
+  ggplot(aes(x = TAVG, y = ((All.Deaths-normal_death_rate)/normal_death_rate), color = month(mdy(Week.Ending.Date)))) + geom_point()
+```
+
+```{r}
+
+joined %>% mutate(
+  normal_death_rate = rollmean(All.Deaths, 52*3, na.pad = TRUE)
+) %>%
+  ggplot(aes(x = TAVG, y = ((All.Deaths-normal_death_rate)/normal_death_rate))) + geom_point() + facet_wrap(~WEEK)
+
+
+```
+
+Below, I remove Pnumonia and Flu deaths from the sample to try and remove Flu season as a confounding factor.
+
+```{r}
+joined %>% mutate(
+  sans_flu = (All.Deaths - Pneumonia.and.Influenza.Deaths),
+  normal_death_rate = rollmean(sans_flu, 52*3, na.pad = TRUE)
+) %>%
+  ggplot(aes(x = TAVG, y = ((sans_flu-normal_death_rate)/normal_death_rate), color = month(mdy(Week.Ending.Date)))) + geom_point()
+```
+
+```{r}
+joined %>% mutate(
+  sans_flu = (All.Deaths - Pneumonia.and.Influenza.Deaths),
+  normal_death_rate = rollmean(sans_flu, 52*3, na.pad = TRUE)
+) %>%
+  ggplot(aes(x = TAVG, y = ((sans_flu-normal_death_rate)/normal_death_rate))) + geom_point() + facet_wrap(~WEEK)
+
+```
+

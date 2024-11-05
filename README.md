@@ -48,11 +48,11 @@ and the rest could be dropped.
 - Week Ending Date -
 - State -
 - City -
-- Pnemeumonia Deaths -
-- All Deaths -
+- Pneumonia.and.Influenza.Deaths
+- All.Deaths -
 - \<1 year (all cause deaths) -
 - 1-24 years (all cause deaths) -
-- 25-44 years (al lcause deaths) -
+- 25-44 years (all cause deaths) -
 - 45-64 years (all cause deaths) -
 - 65+ years (all cause deaths) -
 
