@@ -1,0 +1,18 @@
+city,state,station,region,notes
+Little Rock,AR,USW00003930,3,
+Evansville,IN,USW00093817,4,
+Houston,TX,USW00012918,2,
+Memphis,TN,USW00013893,3,
+Seattle,WA,USW00024233,4,
+Indianapolis,IN,USW00093819,5,
+Miami,FL,USW00012839,2,
+Fresno,CA,USW00093193,3,
+Wichita,KS,USW00003928,4,
+Colorado Springs,CO,USW00093037,5,
+Boston,MA,USW00014739,5,
+Pheonix,AZ,USC00029464,2,"complete data from a nearby town, pheonix internal data sources were non-continuous."
+Minneapolis,MN,USW00014922,6,
+Saint Paul,MN,USW00014922,6,
+Utica,NY,USC00308739,6,pre 1992
+Utica,NY,USC00308742,6,post 1992
+Milwaukee,WI,USW00014839,6,
