@@ -1,0 +1,107 @@
+---
+title: "Full_Data_Combined"
+output: html_document
+date: "2024-11-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# All Data Combined
+
+In my previous markdown file ('Combined Example.Rmd') I demonstrated a method of combining the boston weather station data with the deaths in US cities data for analysis. In this file I intend to demonstrate combining all of the data together.
+
+## Required Libraries
+
+```{r}
+library(tidyverse)
+library(lubridate)
+```
+
+## Read Data Files
+
+```{r}
+mortality <- read_csv("Deaths_in_122_U.S._cities_-_1962-2016._122_Cities_Mortality_Reporting_System_20241019.csv")
+all_station_weather <- read_csv("Station_weather_data.csv")
+
+City_station_numbers <- read_csv("City_station_numbers.csv")
+
+```
+## Filter Data Files
+
+```{r}
+City_station_numbers <- City_station_numbers %>% drop_na(city)
+mortality_small <- mortality %>% filter(City %in% City_station_numbers$city)
+
+mortality_small %>% distinct(City)
+
+```
+```{r}
+head(all_station_weather)
+```
+Here I merge the information from city_station_numbers with the station data, allowing us to access the station data by city, state, and region.
+```{r}
+all_station_weather2 <- merge(all_station_weather, mutate(City_station_numbers, STATION = station), by = 'STATION')
+
+head(all_station_weather2)
+```
+The columns of this dataframe need renamed to match the mortality dataframe.
+
+```{r}
+all_station_weather2 <- all_station_weather2 %>% rename_at('city', ~'City')
+all_station_weather2 <- all_station_weather2 %>% rename_at('state', ~'State')
+```
+
+
+## Aggregate Weather Data From Daily to Weekly
+
+First we use lubridate to turn the date into usable values and then use the aggregate function to combine values we want to look at, in this case TAVG, the average daily temperature.
+
+```{r}
+weather_data_prepped <- all_station_weather2 %>% mutate( 
+  DATE = mdy(DATE),
+  Week = week(DATE),
+  Month = month(DATE),
+  Year = year(DATE),
+) %>% 
+  group_by(STATION, Year, Week)
+
+TAVG_weekly <- aggregate(TAVG ~ (region+State+City+STATION+Year+Month+Week), weather_data_prepped, mean)
+
+head(TAVG_weekly)
+
+```
+
+## Merge Weekly Weather dataframe (s) with filtered mortality datarame
+
+```{r}
+head(mortality_small)
+```
+I noticed that many of our columns don't line up nicely for one reason or another but we can fix this
+
+```{r}
+mortality_small <- mortality_small %>% mutate(
+  Date = mdy(`Week Ending Date`),
+  Week = week(Date),
+  Month = month(Date),
+  Year = year(Date),
+) %>% rename_at('REGION', ~'CDC_Region')
+
+head(mortality_small)
+  
+```
+
+
+```{r}
+wm_combined <- merge(mortality_small, TAVG_weekly)
+
+head(wm_combined)
+```
+
+## Save merged file
+
+```{r}
+wm_combined %>% write.csv('combined_TAVGxMortality_Data.csv')
+```
+
