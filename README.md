@@ -222,6 +222,20 @@ wm_combined <- merge(mortality_small, TAVG_weekly)
 
 
 ## Results
+### Seasonal trends in mortality rates 
+#### Regional Differences
+
+### Correlation between temperature and Mortality 
+#### Regional Effects
+
+### Differences in effects by age group
+
+### The effect of various weather events on mortality
+#### Regional Effects
+
+### Relative Vulnerability to Weather Events by Region
+
+### Controlling for Flu season
 
 ## Conclusion
 
