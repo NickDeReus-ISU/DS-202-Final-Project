@@ -27,8 +27,8 @@ We had to unite multiple datasets to answer these question, one from the
 CDC which contains weekly mortality data for a selection of 122 cities
 accessed here:
 <https://data.cdc.gov/dataset/Deaths-in-122-U-S-cities-1962-2016-122-Cities-Mort/mr8w-325u/about_data>
-. The second dataset contains daily weather summaries from weather
-stations from all over the US, the weather station which best represents
+. The second dataset, accessed here <https://www.ncdc.noaa.gov/cdo-web/search> contains daily weather summaries from weather
+stations from the NOAA, the weather station which best represents
 a city from our mortality dataset has to be linked up with their city
 and the rest could be dropped.
 
@@ -224,3 +224,8 @@ wm_combined <- merge(mortality_small, TAVG_weekly)
 ## Results
 
 ## Conclusion
+
+## References
+"Deaths in 122 US Cities, 1962-2016", CDC, <https://data.cdc.gov/dataset/Deaths-in-122-U-S-cities-1962-2016-122-Cities-Mort/mr8w-325u/about_data>
+
+Weather station daily summaries, NOAA, <https://www.ncdc.noaa.gov/cdo-web/search>
