@@ -512,16 +512,30 @@ case TAVG, the average daily temperature.</p>
 ) %&gt;% 
   group_by(STATION, Year, Week)
 
-TAVG_weekly &lt;- aggregate(TAVG ~ (region+State+City+STATION+Year+Month+Week), weather_data_prepped, mean)
+#TAVG_weekly &lt;- aggregate(TAVG ~ (region+State+City+STATION+Year+Month+Week), weather_data_prepped, mean)
 
-head(TAVG_weekly)</code></pre>
-<pre><code>##   region State        City     STATION Year Month Week     TAVG
-## 1      2    AZ     Phoenix USC00029464 1962     1    1 69.42857
-## 2      6    NY       Utica USC00308739 1962     1    1 23.64286
-## 3      4    KS     Wichita USW00003928 1962     1    1 35.50000
-## 4      3    AR Little Rock USW00003930 1962     1    1 41.78571
-## 5      2    FL       Miami USW00012839 1962     1    1 62.71429
-## 6      2    TX     Houston USW00012918 1962     1    1 49.92857</code></pre>
+TAVG_weekly &lt;- weather_data_prepped %&gt;% group_by(region, State, City, STATION, Year, Month, Week) %&gt;%
+  summarize(
+    TAVG = mean(TAVG),
+    TMAX_Max = max(TMAX),
+    TMAX_Mean = mean(TMAX),
+    TMIN_Min = min(TMIN),
+    TMIN_Mean = mean(TMIN),
+  )</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;region&#39;, &#39;State&#39;, &#39;City&#39;, &#39;STATION&#39;,
+## &#39;Year&#39;, &#39;Month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>head(TAVG_weekly)</code></pre>
+<pre><code>## # A tibble: 6 × 12
+## # Groups:   region, State, City, STATION, Year, Month [2]
+##   region State City  STATION  Year Month  Week  TAVG TMAX_Max TMAX_Mean TMIN_Min
+##    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1      2 AZ    Phoe… USC000…  1962     1     1  69.4       73      69.4       NA
+## 2      2 AZ    Phoe… USC000…  1962     1     2  50.5       73      59.3       NA
+## 3      2 AZ    Phoe… USC000…  1962     1     3  49.9       68      63.9       24
+## 4      2 AZ    Phoe… USC000…  1962     1     4  51.9       74      61.1       37
+## 5      2 AZ    Phoe… USC000…  1962     1     5  60         77      76         40
+## 6      2 AZ    Phoe… USC000…  1962     2     5  57.5       75      74.2       39
+## # ℹ 1 more variable: TMIN_Mean &lt;dbl&gt;</code></pre>
 </div>
 <div id="merge-weekly-weather-dataframe-s-with-filtered-mortality-datarame" class="section level2">
 <h2>Merge Weekly Weather dataframe (s) with filtered mortality
@@ -589,13 +603,20 @@ head(wm_combined)</code></pre>
 ## 4                             6           6                             20
 ## 5                             3           5                             17
 ## 6                             4           3                             18
-##   65+ years (all cause deaths)       Date region     STATION     TAVG
-## 1                           37 1962-01-06      3 USW00003930 41.78571
-## 2                           44 1962-03-10      3 USW00003930 44.50000
-## 3                           39 1962-03-17      3 USW00003930 45.35714
-## 4                           43 1962-03-24      3 USW00003930 55.92857
-## 5                           35 1962-03-31      3 USW00003930 56.66667
-## 6                           43 1962-04-07      3 USW00003930 52.85714</code></pre>
+##   65+ years (all cause deaths)       Date region     STATION     TAVG TMAX_Max
+## 1                           37 1962-01-06      3 USW00003930 41.78571       64
+## 2                           44 1962-03-10      3 USW00003930 44.50000       65
+## 3                           39 1962-03-17      3 USW00003930 45.35714       67
+## 4                           43 1962-03-24      3 USW00003930 55.92857       73
+## 5                           35 1962-03-31      3 USW00003930 56.66667       81
+## 6                           43 1962-04-07      3 USW00003930 52.85714       69
+##   TMAX_Mean TMIN_Min TMIN_Mean
+## 1  51.71429       25  31.85714
+## 2  52.71429       27  36.28571
+## 3  55.57143       31  35.14286
+## 4  64.14286       39  47.71429
+## 5  67.33333       41  46.00000
+## 6  60.85714       36  44.85714</code></pre>
 </div>
 <div id="save-merged-file" class="section level2">
 <h2>Save merged file</h2>

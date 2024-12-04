@@ -67,7 +67,16 @@ weather_data_prepped <- all_station_weather2 %>% mutate(
 ) %>% 
   group_by(STATION, Year, Week)
 
-TAVG_weekly <- aggregate(TAVG ~ (region+State+City+STATION+Year+Month+Week), weather_data_prepped, mean)
+#TAVG_weekly <- aggregate(TAVG ~ (region+State+City+STATION+Year+Month+Week), weather_data_prepped, mean)
+
+TAVG_weekly <- weather_data_prepped %>% group_by(region, State, City, STATION, Year, Month, Week) %>%
+  summarize(
+    TAVG = mean(TAVG),
+    TMAX_Max = max(TMAX),
+    TMAX_Mean = mean(TMAX),
+    TMIN_Min = min(TMIN),
+    TMIN_Mean = mean(TMIN),
+  )
 
 head(TAVG_weekly)
 
