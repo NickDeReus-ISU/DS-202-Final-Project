@@ -498,6 +498,8 @@ head(all_station_weather2)</code></pre>
 dataframe.</p>
 <pre class="r"><code>all_station_weather2 &lt;- all_station_weather2 %&gt;% rename_at(&#39;city&#39;, ~&#39;City&#39;)
 all_station_weather2 &lt;- all_station_weather2 %&gt;% rename_at(&#39;state&#39;, ~&#39;State&#39;)</code></pre>
+<pre class="r"><code>all_station_weather2 %&gt;% filter(!is.na(SNOW)) %&gt;% nrow() / nrow(all_station_weather2)</code></pre>
+<pre><code>## [1] 0.9151531</code></pre>
 </div>
 <div id="aggregate-weather-data-from-daily-to-weekly" class="section level2">
 <h2>Aggregate Weather Data From Daily to Weekly</h2>
@@ -521,11 +523,22 @@ TAVG_weekly &lt;- weather_data_prepped %&gt;% group_by(region, State, City, STAT
     TMAX_Mean = mean(TMAX),
     TMIN_Min = min(TMIN),
     TMIN_Mean = mean(TMIN),
+    TSUN = mean(TSUN),
+    WSFG_Max = max(WSFG),
+    WSFG_Mean = mean(WSFG),
+    AWND = mean(AWND),
+    PRCP_Mean = mean(PRCP),
+    PRCP_Sum = sum(PRCP),
+    PRCP_Max = max(PRCP),
+    SNOW_Mean = mean(SNOW),
+    SNOW_Sum = sum(SNOW),
+    SNWD_Mean = mean(SNWD),
+    SNWD_Max = mean(SNWD),
   )</code></pre>
 <pre><code>## `summarise()` has grouped output by &#39;region&#39;, &#39;State&#39;, &#39;City&#39;, &#39;STATION&#39;,
 ## &#39;Year&#39;, &#39;Month&#39;. You can override using the `.groups` argument.</code></pre>
 <pre class="r"><code>head(TAVG_weekly)</code></pre>
-<pre><code>## # A tibble: 6 × 12
+<pre><code>## # A tibble: 6 × 23
 ## # Groups:   region, State, City, STATION, Year, Month [2]
 ##   region State City  STATION  Year Month  Week  TAVG TMAX_Max TMAX_Mean TMIN_Min
 ##    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
@@ -535,7 +548,10 @@ TAVG_weekly &lt;- weather_data_prepped %&gt;% group_by(region, State, City, STAT
 ## 4      2 AZ    Phoe… USC000…  1962     1     4  51.9       74      61.1       37
 ## 5      2 AZ    Phoe… USC000…  1962     1     5  60         77      76         40
 ## 6      2 AZ    Phoe… USC000…  1962     2     5  57.5       75      74.2       39
-## # ℹ 1 more variable: TMIN_Mean &lt;dbl&gt;</code></pre>
+## # ℹ 12 more variables: TMIN_Mean &lt;dbl&gt;, TSUN &lt;dbl&gt;, WSFG_Max &lt;dbl&gt;,
+## #   WSFG_Mean &lt;dbl&gt;, AWND &lt;dbl&gt;, PRCP_Mean &lt;dbl&gt;, PRCP_Sum &lt;dbl&gt;,
+## #   PRCP_Max &lt;dbl&gt;, SNOW_Mean &lt;dbl&gt;, SNOW_Sum &lt;dbl&gt;, SNWD_Mean &lt;dbl&gt;,
+## #   SNWD_Max &lt;dbl&gt;</code></pre>
 </div>
 <div id="merge-weekly-weather-dataframe-s-with-filtered-mortality-datarame" class="section level2">
 <h2>Merge Weekly Weather dataframe (s) with filtered mortality
@@ -610,13 +626,20 @@ head(wm_combined)</code></pre>
 ## 4                           43 1962-03-24      3 USW00003930 55.92857       73
 ## 5                           35 1962-03-31      3 USW00003930 56.66667       81
 ## 6                           43 1962-04-07      3 USW00003930 52.85714       69
-##   TMAX_Mean TMIN_Min TMIN_Mean
-## 1  51.71429       25  31.85714
-## 2  52.71429       27  36.28571
-## 3  55.57143       31  35.14286
-## 4  64.14286       39  47.71429
-## 5  67.33333       41  46.00000
-## 6  60.85714       36  44.85714</code></pre>
+##   TMAX_Mean TMIN_Min TMIN_Mean TSUN WSFG_Max WSFG_Mean AWND  PRCP_Mean PRCP_Sum
+## 1  51.71429       25  31.85714   NA     39.1  24.11429   NA 0.18285714     1.28
+## 2  52.71429       27  36.28571   NA       NA        NA   NA 0.17571429     1.23
+## 3  55.57143       31  35.14286   NA     38.0  21.77143   NA 0.00000000     0.00
+## 4  64.14286       39  47.71429   NA     32.2  26.10000   NA 0.26142857     1.83
+## 5  67.33333       41  46.00000   NA     28.9  24.40000   NA 0.39000000     2.34
+## 6  60.85714       36  44.85714   NA     28.9  19.91429   NA 0.04142857     0.29
+##   PRCP_Max SNOW_Mean SNOW_Sum SNWD_Mean SNWD_Max
+## 1     1.08         0        0         0        0
+## 2     0.90         0        0         0        0
+## 3     0.00         0        0         0        0
+## 4     1.04         0        0         0        0
+## 5     2.34         0        0         0        0
+## 6     0.16         0        0         0        0</code></pre>
 </div>
 <div id="save-merged-file" class="section level2">
 <h2>Save merged file</h2>

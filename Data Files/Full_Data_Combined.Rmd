@@ -53,6 +53,9 @@ all_station_weather2 <- all_station_weather2 %>% rename_at('city', ~'City')
 all_station_weather2 <- all_station_weather2 %>% rename_at('state', ~'State')
 ```
 
+```{r}
+all_station_weather2 %>% filter(!is.na(SNOW)) %>% nrow() / nrow(all_station_weather2)
+```
 
 ## Aggregate Weather Data From Daily to Weekly
 
@@ -76,6 +79,17 @@ TAVG_weekly <- weather_data_prepped %>% group_by(region, State, City, STATION, Y
     TMAX_Mean = mean(TMAX),
     TMIN_Min = min(TMIN),
     TMIN_Mean = mean(TMIN),
+    TSUN = mean(TSUN),
+    WSFG_Max = max(WSFG),
+    WSFG_Mean = mean(WSFG),
+    AWND = mean(AWND),
+    PRCP_Mean = mean(PRCP),
+    PRCP_Sum = sum(PRCP),
+    PRCP_Max = max(PRCP),
+    SNOW_Mean = mean(SNOW),
+    SNOW_Sum = sum(SNOW),
+    SNWD_Mean = mean(SNWD),
+    SNWD_Max = mean(SNWD),
   )
 
 head(TAVG_weekly)
