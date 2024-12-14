@@ -4,6 +4,10 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(tidyverse)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -18,8 +22,72 @@ The weather has outstanding impacts on the daily lives of individuals, this proj
 We shall endeavor to answer the following questions:
 
 1. Are there seasonal trends in mortality rates? Do different regions experience these impacts differently?
+```{R} 
+allData <- read.csv("Data Files/combined_TAVGxMortality_Data.csv")
+```
+
+
+### Create lists of the cities that I'm making observations on
+```{R}
+myStatesList <- c('FL', 'CA', 'KS', 'CO')
+myCitiesList <- c('Miami', 'Fresno', 'Wichita', 'Colorado Springs')
+```
+
+### Filter data down to focused cities
+### Deaths seem to be higher on average in the Winter Months
+### Fresno in Region 3, specifically, saw jumps in mortality November through March each year
+### Miami, in Region 2, reported a jump in mortality count between June and July in years 
+```{R}
+myCitiesData <- allData %>%
+  filter(State %in% myStatesList) %>% filter(City %in% myCitiesList)
+
+monthlyDeathsSummed<- myCitiesData %>%
+  group_by(Month, Year, City) %>%
+  summarise(total = sum(All.Deaths))
+
+ggplot(monthlyDeathsSummed, aes(x=Month, y=total, color=City)) + 
+  geom_point() + 
+  facet_wrap(~Year, scales="free_x") +
+  labs(
+    title = "Total Deaths by Month",
+    x = "Month",
+    y = "Total Deaths"
+  )
+```
+
+
 
 2. How much of an impact does temperature have on mortality? Do different regions experience these impacts differently?
+
+```{R}
+ourStatesList <- c('FL', 'CA', 'KS', 'CO', 'TX', 'TN', 'WA', 'IN', 'AZ', 'AR', 'IN', 'MA', 'NY', 'MN', 'WI')
+ourCitiesList <- c('Miami', 'Fresno', 'Wichita', 'Colorado Springs', 'Pheonix', 'Little Rock', 'Evansville', 'Boston', 'Houston', 'Memphis', 'Seattle', 'Indianapolis', 'Utica', 'Minneapolis', 'Saint Paul', 'Milwaukee')
+
+ourCitiesData <- allData %>%
+  filter(State %in% ourStatesList) %>% filter(City %in% ourCitiesList)
+```
+### The higher end of maximum temperatures during a month generally sees more deaths than the lower end of maximum temperatures, being that the total deaths for our observed cities was below 1e+05 at average maximum temperature of 25, whereas the total deaths was closer to 8e+05 when the average maximum temperature was 85.
+#### Plot of the mean of the maximum monthly temperature plotted against the total deaths occurring at those temperatures
+```{R}
+ggplot(ourCitiesData, aes(x=TMAX_Mean, weight=All.Deaths)) + geom_histogram(bins=15)
+```
+
+### The most deaths occurred during times where the average minimum temperature was between 45 and 60, which is likely the minimum from the days with high maximum temperatures. It is expected that colder regions will see higher mortality counts in lower temperatures when observed outside of the other regions.
+#### Plot of the mean of the minimum monthly temperature plotted against the total deaths occurring at those temperatures
+```{R}
+ggplot(ourCitiesData, aes(x=TMIN_Mean, weight=All.Deaths)) + geom_histogram(bins=15)
+```
+### Region 2 sees the highest death counts at maximum temperatures near 90, with death counts sharply increasing as the max temperature approaches that value. This region's mortality rates do not seem as affected by temperatures below 35, likely due to a generally higher climate and not seeing temperatures that low.
+### Region 6 confirms the earlier held suspicion of a colder climate holding a higher mortality rate at lower temperatures than that of higher climates. This region has two mortality rate spikes: One where the max temperature approaches 75, and another where it is close to 30. However, the mortality rate seems to be fairly consistent at minimum temperatures between 35 and 60 in region 6
+
+#### Plot of the mean of the maximum monthly temperature plotted against the total deaths occurring at those temperatures, grouped by Region
+```{R}
+ggplot(ourCitiesData, aes(x=TMAX_Mean, weight=All.Deaths)) + geom_histogram(bins=15) + facet_wrap(~region)
+```
+#### Plot of the mean of the minimum monthly temperature plotted against the total deaths occurring at those temperatures
+```{R}
+ggplot(ourCitiesData, aes(x=TMIN_Mean, weight=All.Deaths)) + geom_histogram(bins=15) + facet_wrap(~region)
+```
 
 3. Are different age groups affected differently? What age groups are most at risk?
 

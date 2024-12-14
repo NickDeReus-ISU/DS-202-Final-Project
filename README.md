@@ -3,7 +3,7 @@ Analysis of the Effects of Weather on Mortality in Metropolitan Areas
 
 Madhu Avula, Nick DeReus, Jacob Johnson, Brianna Norman
 
-# Rough Draft
+# This document will eventually contain the final report of this project. For now it is a place for thoughts and structuring
 
 ## Introduction
 
@@ -14,12 +14,132 @@ well as the potential dangers of ongoing climate change.
 
 We shall endeavor to answer the following questions:
 
-1. Are there seasonal trends in mortality rates? Do different regions experience these impacts differently?
-2. How much of an impact does temperature have on mortality? Do different regions experience these impacts differently?
-3. Are different age groups affected differently? What age groups are most at risk?
-4. Which kinds of weather events have the greatest impacts on mortality? (Extreme heat, cold, ice, flooding)
-5. Define which regions are most affected by certain types of weather? (Which most vulnerable to heat waves and extreme cold)
-6. Do each of the above trends hold when pnumonia deaths (flu seasons) are removed?
+1.  Are there seasonal trends in mortality rates? Do different regions
+    experience these impacts differently?
+
+``` r
+allData <- read.csv("Data Files/combined_TAVGxMortality_Data.csv")
+```
+
+### Create lists of the cities that I’m making observations on
+
+``` r
+myStatesList <- c('FL', 'CA', 'KS', 'CO')
+myCitiesList <- c('Miami', 'Fresno', 'Wichita', 'Colorado Springs')
+```
+
+### Filter data down to focused cities
+
+### Deaths seem to be higher on average in the Winter Months
+
+### Fresno in Region 3, specifically, saw jumps in mortality November through March each year
+
+### Miami, in Region 2, reported a jump in mortality count between June and July in years
+
+``` r
+myCitiesData <- allData %>%
+  filter(State %in% myStatesList) %>% filter(City %in% myCitiesList)
+
+monthlyDeathsSummed<- myCitiesData %>%
+  group_by(Month, Year, City) %>%
+  summarise(total = sum(All.Deaths))
+```
+
+    ## `summarise()` has grouped output by 'Month', 'Year'. You can override using the
+    ## `.groups` argument.
+
+``` r
+ggplot(monthlyDeathsSummed, aes(x=Month, y=total, color=City)) + 
+  geom_point() + 
+  facet_wrap(~Year, scales="free_x") +
+  labs(
+    title = "Total Deaths by Month",
+    x = "Month",
+    y = "Total Deaths"
+  )
+```
+
+    ## Warning: Removed 32 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+2.  How much of an impact does temperature have on mortality? Do
+    different regions experience these impacts differently?
+
+``` r
+ourStatesList <- c('FL', 'CA', 'KS', 'CO', 'TX', 'TN', 'WA', 'IN', 'AZ', 'AR', 'IN', 'MA', 'NY', 'MN', 'WI')
+ourCitiesList <- c('Miami', 'Fresno', 'Wichita', 'Colorado Springs', 'Pheonix', 'Little Rock', 'Evansville', 'Boston', 'Houston', 'Memphis', 'Seattle', 'Indianapolis', 'Utica', 'Minneapolis', 'Saint Paul', 'Milwaukee')
+
+ourCitiesData <- allData %>%
+  filter(State %in% ourStatesList) %>% filter(City %in% ourCitiesList)
+```
+
+### The higher end of maximum temperatures during a month generally sees more deaths than the lower end of maximum temperatures, being that the total deaths for our observed cities was below 1e+05 at average maximum temperature of 25, whereas the total deaths was closer to 8e+05 when the average maximum temperature was 85.
+
+#### Plot of the mean of the maximum monthly temperature plotted against the total deaths occurring at those temperatures
+
+``` r
+ggplot(ourCitiesData, aes(x=TMAX_Mean, weight=All.Deaths)) + geom_histogram(bins=15)
+```
+
+    ## Warning: Removed 188 rows containing non-finite outside the scale range
+    ## (`stat_bin()`).
+
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+### The most deaths occurred during times where the average minimum temperature was between 45 and 60, which is likely the minimum from the days with high maximum temperatures. It is expected that colder regions will see higher mortality counts in lower temperatures when observed outside of the other regions.
+
+#### Plot of the mean of the minimum monthly temperature plotted against the total deaths occurring at those temperatures
+
+``` r
+ggplot(ourCitiesData, aes(x=TMIN_Mean, weight=All.Deaths)) + geom_histogram(bins=15)
+```
+
+    ## Warning: Removed 204 rows containing non-finite outside the scale range
+    ## (`stat_bin()`).
+
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- --> \### Region 2
+sees the highest death counts at maximum temperatures near 90, with
+death counts sharply increasing as the max temperature approaches that
+value. This region’s mortality rates do not seem as affected by
+temperatures below 35, likely due to a generally higher climate and not
+seeing temperatures that low. \### Region 6 confirms the earlier held
+suspicion of a colder climate holding a higher mortality rate at lower
+temperatures than that of higher climates. This region has two mortality
+rate spikes: One where the max temperature approaches 75, and another
+where it is close to 30. However, the mortality rate seems to be fairly
+consistent at minimum temperatures between 35 and 60 in region 6
+
+#### Plot of the mean of the maximum monthly temperature plotted against the total deaths occurring at those temperatures, grouped by Region
+
+``` r
+ggplot(ourCitiesData, aes(x=TMAX_Mean, weight=All.Deaths)) + geom_histogram(bins=15) + facet_wrap(~region)
+```
+
+    ## Warning: Removed 188 rows containing non-finite outside the scale range
+    ## (`stat_bin()`).
+
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- --> \#### Plot of
+the mean of the minimum monthly temperature plotted against the total
+deaths occurring at those temperatures
+
+``` r
+ggplot(ourCitiesData, aes(x=TMIN_Mean, weight=All.Deaths)) + geom_histogram(bins=15) + facet_wrap(~region)
+```
+
+    ## Warning: Removed 204 rows containing non-finite outside the scale range
+    ## (`stat_bin()`).
+
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+3.  Are different age groups affected differently? What age groups are
+    most at risk?
+
+4.  Which kinds of weather events have the greatest impacts on
+    mortality? (Extreme heat, cold, ice, flooding)
+
+5.  
 
 ## Data
 
@@ -27,8 +147,8 @@ We had to unite multiple datasets to answer these question, one from the
 CDC which contains weekly mortality data for a selection of 122 cities
 accessed here:
 <https://data.cdc.gov/dataset/Deaths-in-122-U-S-cities-1962-2016-122-Cities-Mort/mr8w-325u/about_data>
-. The second dataset, accessed here <https://www.ncdc.noaa.gov/cdo-web/search> contains daily weather summaries from weather
-stations from the NOAA, the weather station which best represents
+. The second dataset contains daily weather summaries from weather
+stations from all over the US, the weather station which best represents
 a city from our mortality dataset has to be linked up with their city
 and the rest could be dropped.
 
@@ -110,136 +230,3 @@ variables:
 - TMIN - Minimum temperature
 - WDFM - Fastest mile wind direction
 - TSUN - Total sunshine for the period
-
-#### Department of Energy Climate Regions
-
-The US Department of Energy released a map breaking the US into regions at the county level based upon the climate control needs of people in different areas of the nation. Each region is numbered from 1-8, 1 being the hottest and 8 being the coolest. This mapping was selected to help break up the larger dataset by climate region for selection and further comparison.
-
-
-![alt text](https://github.com/NickDeReus-ISU/DS-202-Final-Project/blob/main/Supporting%20Materials/Climate%20Zones%20Map.jpg)
-
-
-### Data Preperation
-
-Our multiple datasets had to be combined. Due to constraints with the NOAA data we limited the cities from the 122 in the Mortality dataset to 15 total, 3 from each of the 5 regions from the US Department of Energy map containing the grand majority of the population, regions 2-6.
-
-Region 2
- - Houston, TX
- - Miami, FL
- - Phoenix, AZ
-   
-Region 3
- - Little Rock, AR
- - Memphis, TN
- - Fresno, CA
-   
-Region 4
- - Evansville, IN
- - Seattle, WA
- - Wichita, KS
-   
-Region 5
- - Indianapolis, IN
- - Colorado Springs, CO
- - Boston, MA
-   
-Region 6
- - Minneapolis, MN
- - Saint Paul, MN
- - Milwaukee, WI
- 
-These cities then had to be paired up with the weather data, which is tied to specific weather station numbers rather than cities. A table was made up manually containing the information for each city.
-
-| city             | state | station     | region |
-|------------------|-------|-------------|--------|
-| Houston          | TX    | USW00012918 | 2      |                                                                                        
-| Miami            | FL    | USW00012839 | 2      |                                                                                        
-| Phoenix          | AZ    | USC00029464 | 2      |
-| Little Rock      | AR    | USW00003930 | 3      |                                                                                        
-| Memphis          | TN    | USW00013893 | 3      |                                                                                        
-| Fresno           | CA    | USW00093193 | 3      |                                                                                        
-| Evansville       | IN    | USW00093817 | 4      |                                                                                        
-| Seattle          | WA    | USW00024233 | 4      |                                                                                        
-| Wichita          | KS    | USW00003928 | 4      |                                                                                        
-| Indianapolis     | IN    | USW00093819 | 5      |                                                                                        
-| Colorado Springs | CO    | USW00093037 | 5      |                                                                                        
-| Boston           | MA    | USW00014739 | 5      |                                                                                        
-| Minneapolis      | MN    | USW00014922 | 6      |                                                                                        
-| Saint Paul       | MN    | USW00014922 | 6      |                                                                                        
-| Milwaukee        | WI    | USW00014839 | 6      |                                                                                        
-
-With that prepared, we clean our data:
-```{r}
-# Imports:
-mortality <- read_csv("Deaths_in_122_U.S._cities_-_1962-2016._122_Cities_Mortality_Reporting_System_20241019.csv")
-all_station_weather <- read_csv("Station_weather_data.csv")
-City_station_numbers <- read_csv("City_station_numbers.csv")
-
-# Clean the table containing the manually entered city station data which contained empty rows
-City_station_numbers <- City_station_numbers %>% drop_na(city)
-
-# Rename columns in the weather dataframe
-all_station_weather <- all_station_weather %>% rename_at('city', ~'City')
-all_station_weather <- all_station_weather %>% rename_at('state', ~'State')
-
-```
-Prepare and aggregate weather data, the weather data is daily while the mortality data is weekly.
-
-```{r}
-weather_data_prepped <- all_station_weather %>% mutate( 
-  DATE = mdy(DATE),
-  Week = week(DATE),
-  Month = month(DATE),
-  Year = year(DATE),
-) %>% 
-  group_by(STATION, Year, Week)
-
-TAVG_weekly <- aggregate(TAVG ~ (region+State+City+STATION+Year+Month+Week), weather_data_prepped, mean)
-```
-We then filter and combine our dataframes
-
-```{r}
-# Filter the mortality in 122 cities data by city 
-mortality_small <- mortality %>% filter(City %in% City_station_numbers$city)
-
-# Merge all_station_weather with city_station_data, adding city and region information to the weather data.
-all_station_weather2 <- merge(all_station_weather, mutate(City_station_numbers, STATION = station), by = 'STATION')
-
-# Mutate mortality data, renaming region and adding detailed date information we can use to filter.
-mortality_small <- mortality_small %>% mutate(
-  Date = mdy(`Week Ending Date`),
-  Week = week(Date),
-  Month = month(Date),
-  Year = year(Date),
-) %>% rename_at('REGION', ~'CDC_Region')
-```
-Finally combine weather and mortality data
-
-```{r}
-wm_combined <- merge(mortality_small, TAVG_weekly)
-```
-
-
-
-## Results
-### Seasonal trends in mortality rates 
-#### Regional Differences
-
-### Correlation between temperature and Mortality 
-#### Regional Effects
-
-### Differences in effects by age group
-
-### The effect of various weather events on mortality
-#### Regional Effects
-
-### Relative Vulnerability to Weather Events by Region
-
-### Controlling for Flu season
-
-## Conclusion
-
-## References
-"Deaths in 122 US Cities, 1962-2016", CDC, <https://data.cdc.gov/dataset/Deaths-in-122-U-S-cities-1962-2016-122-Cities-Mort/mr8w-325u/about_data>
-
-Weather station daily summaries, NOAA, <https://www.ncdc.noaa.gov/cdo-web/search>
