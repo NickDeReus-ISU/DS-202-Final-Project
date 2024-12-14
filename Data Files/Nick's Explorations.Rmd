@@ -1,0 +1,320 @@
+---
+title: "Nick's Explorations"
+author: "Nick DeReus"
+date: "2024-12-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+df <- read_csv("combined_TAVGxMortality_Data.csv")
+```
+Some initial exploration of All Deaths numbers. There is strong seasonality in all regions with the peak of general mortality in January, then a decrease until October and a fast uptick beginning in December for non-normalized data.
+
+This trend is also visible in the boxplots which contain normalized data. The boxplots show that the uptick in death rate can begin as soon as October, which is consistent with flu season.
+
+```{r}
+
+dfStats <- df %>% group_by(City) %>% filter(!is.na(`All Deaths`)) %>% summarize(
+  All_Deaths_mm = mean(`All Deaths`),
+  All_Deaths_msd = sd(`All Deaths`),
+)
+
+df2 <- merge(df, dfStats)
+```
+
+```{r}
+# Box Plots #
+
+df2 %>% group_by(City, Month) %>% 
+  reframe(
+    deathsZ = (`All Deaths` - as.numeric(All_Deaths_mm)) / All_Deaths_msd
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             ) 
+         ) + 
+  geom_boxplot() + ylim(-5,5) # + facet_wrap('City')
+
+df2 %>% group_by(City, region, Month) %>% 
+  reframe(
+    deathsZ = (`All Deaths` - as.numeric(All_Deaths_mm)) / All_Deaths_msd
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             ) 
+         ) + 
+  geom_boxplot() + ylim(-5,5) + facet_wrap('region')
+
+df2 %>% filter( (Year > 1990) & (Year < 2011) ) %>% group_by(City, region, Month) %>% 
+  reframe(
+    deathsZ = (`All Deaths` - as.numeric(All_Deaths_mm)) / All_Deaths_msd
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             ) 
+         ) + 
+  geom_boxplot() + ylim(-5,5) + facet_wrap('region')
+
+# Bar Charts #
+
+df2 %>% group_by(City, Month) %>% 
+  reframe(
+    deathsZ = (`All Deaths` - as.numeric(All_Deaths_mm)) / All_Deaths_msd
+  ) %>% filter(!is.na(deathsZ)) %>% group_by(Month) %>% reframe(
+    deathsZ = mean(deathsZ)
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             ) 
+         ) + 
+  geom_bar(stat = 'identity') # + facet_wrap('City')
+
+df2 %>% group_by(City, region, Month) %>% 
+  reframe(
+    deathsZ = (`All Deaths` - as.numeric(All_Deaths_mm)) / All_Deaths_msd
+  ) %>% filter(!is.na(deathsZ)) %>% group_by(region, Month) %>% reframe(
+    deathsZ = mean(deathsZ)
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             ) 
+         ) + 
+  geom_bar(stat = 'identity') + facet_wrap('region') + ggtitle('Normalized All Deaths per Climate Region by Month')
+
+df2 %>% filter( (Year > 1990) & (Year < 2011) ) %>% group_by(City, region, Month) %>% 
+  reframe(
+    deathsZ = (`All Deaths` - as.numeric(All_Deaths_mm)) / All_Deaths_msd
+  ) %>% filter(!is.na(deathsZ)) %>% group_by(region, Month) %>% reframe(
+    deathsZ = mean(deathsZ)
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             ) 
+         ) + 
+ geom_bar(stat = 'identity') + facet_wrap('region')
+
+```
+```{r}
+# Bar Charts #
+
+df2 %>% group_by(City, Month) %>%
+  ggplot(aes(x = factor(Month), y = `All Deaths`)) + geom_bar(stat = 'identity') + ggtitle("All Deaths by Month")
+
+df2 %>% group_by(City, Month) %>%
+  ggplot(aes(x = factor(Month), y = `All Deaths`)) + geom_bar(stat = 'identity') + ggtitle("All Deaths by Month by Climate Region") + facet_wrap('region')
+
+df2 %>% group_by(City, Month) %>%
+  ggplot(aes(x = factor(Month), y = `All Deaths`)) + geom_bar(stat = 'identity') + ggtitle("All Deaths by Month by City") + facet_wrap('City')
+```
+
+
+Now, lets control for pneumonia deaths.
+
+The trend remains after controlling for pnumonia deaths.
+
+```{r}
+
+dfControlled <- df
+
+dfControlled$`All Deaths` <- dfControlled$`All Deaths` - dfControlled$`Pneumonia and Influenza Deaths`
+
+dfStats2 <- dfControlled %>% group_by(City) %>% filter(!is.na(`All Deaths`)) %>% summarize(
+  All_Deaths_mm = mean(`All Deaths`),
+  All_Deaths_msd = sd(`All Deaths`),
+)
+
+df3 <- merge(df, dfStats2)
+```
+
+```{r}
+
+# Box Plots #
+
+df3 %>% group_by(City, Month) %>% 
+  reframe(
+    deathsZ = (`All Deaths` - as.numeric(All_Deaths_mm)) / All_Deaths_msd
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             ) 
+         ) + 
+  geom_boxplot() + ylim(-5,5) # + facet_wrap('City')
+
+df3 %>% group_by(City, region, Month) %>% 
+  reframe(
+    deathsZ = (`All Deaths` - as.numeric(All_Deaths_mm)) / All_Deaths_msd
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             ) 
+         ) + 
+  geom_boxplot() + ylim(-5,5) + facet_wrap('region')
+
+df3 %>% filter( (Year > 1990) & (Year < 2011) ) %>% group_by(City, region, Month) %>% 
+  reframe(
+    deathsZ = (`All Deaths` - as.numeric(All_Deaths_mm)) / All_Deaths_msd
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             ) 
+         ) + 
+  geom_boxplot() + ylim(-5,5) + facet_wrap('region')
+
+# Bar Charts #
+
+df3 %>% group_by(City, Month) %>%
+  ggplot(aes(x = factor(Month), y = `All Deaths`)) + geom_bar(stat = 'identity') + ggtitle("All Deaths by Month")
+
+df3 %>% group_by(City, Month) %>%
+  ggplot(aes(x = factor(Month), y = `All Deaths`)) + geom_bar(stat = 'identity') + ggtitle("All Deaths by Month by Climate Region") + facet_wrap('region')
+
+df3 %>% group_by(City, Month) %>%
+  ggplot(aes(x = factor(Month), y = `All Deaths`)) + geom_bar(stat = 'identity') + ggtitle("All Deaths by Month by City") + facet_wrap('City')
+```
+
+Some exploration of total deaths and deaths by city over the duration of the dataset.
+
+```{r}
+df2 %>% filter(!is.na(`All Deaths`)) %>% group_by(Year) %>% summarize(
+  deaths = sum(`All Deaths`)
+) %>%
+  ggplot(aes(x = Year, y = deaths) ) + geom_line()
+
+df2 %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year) %>% summarize(
+  deaths = sum(`All Deaths`)
+) %>%
+  ggplot(aes(x = Year, y = deaths, color = City) ) + geom_line()
+```
+
+A look at the pnumonia deaths data.
+
+It seems that pnumonia deaths compose a very small portion of the total deaths, but they occur mostly when we would have expected - during flu season. Pnumonia deaths are far more seasonal than general deaths.
+
+```{r}
+
+# Bar Charts #
+
+df2 %>% group_by(City, Month) %>%
+  ggplot(aes(x = factor(Month), y = `Pneumonia and Influenza Deaths`)) + geom_bar(stat = 'identity') + ggtitle("Pnumonia Deaths by Month")
+
+df2 %>% group_by(City, Month) %>%
+  ggplot(aes(x = factor(Month), y = `Pneumonia and Influenza Deaths`)) + geom_bar(stat = 'identity') + ggtitle("Pnumonia Deaths by Month by Climate Region") + facet_wrap('region')
+
+df2 %>% group_by(City, Month) %>%
+  ggplot(aes(x = factor(Month), y = `Pneumonia and Influenza Deaths`)) + geom_bar(stat = 'identity') + ggtitle("Pnumonia Deaths by Month by City") + facet_wrap('City')
+```
+
+Lets take a look at the weather data now
+
+```{r}
+df %>% nrow()
+
+df %>% filter(!is.na(TAVG)) %>% nrow()
+```
+
+
+```{r}
+df %>% filter(!is.na(`TAVG`)) %>% group_by(Year) %>% summarize(
+  Avg = mean(`TAVG`)
+) %>%
+  ggplot(aes(x = Year, y = Avg) ) + geom_line() + ggtitle('Annual Average Temperature')
+
+df %>% filter(!is.na(`TAVG`)) %>% group_by(region, Year) %>% summarize(
+  Avg = mean(`TAVG`)
+) %>%
+  ggplot(aes(x = Year, y = Avg, color = factor(region)) ) + geom_line() + ggtitle('Annual Average Temperature by Region')
+
+df %>% filter(!is.na(`TAVG`)) %>% group_by(City, Year) %>% summarize(
+  Avg = mean(`TAVG`)
+) %>%
+  ggplot(aes(x = Year, y = Avg, color = City) ) + geom_line() + ggtitle('Annual Average Temperature by City')
+
+df %>% filter(!is.na(`TAVG`)) %>% group_by(region) %>% ggplot(aes(x = TAVG,)) + geom_histogram() + ggtitle('Average Temperature Histogram')
+
+df %>% filter(!is.na(`TAVG`)) %>% ggplot(aes(x = TAVG,)) + geom_histogram() + facet_wrap('region') + ggtitle('Average Temperature Histograms by Region')
+```
+
+```{r}
+df %>% filter(!is.na(`TAVG`)) %>% group_by(Month) %>% summarize(
+  Avg = mean(`TAVG`)
+) %>%
+  ggplot(aes(x = Month %>% factor(), y = Avg)) + geom_bar(stat = 'identity') + ggtitle('Average Temperature by Month')
+
+df %>% filter(!is.na(`TAVG`)) %>% group_by(region, Month) %>% summarize(
+  Avg = mean(`TAVG`)
+) %>%
+  ggplot(aes(x = Month %>% factor(), y = Avg)) + geom_bar(stat = 'identity') + facet_wrap('region') + ggtitle('Average Temperature by Month')
+```
+Looking at temperature correlations with death numbers, I need to do this again with normalized deaths data.
+
+```{r}
+dfSplit_High <- df %>% filter(TAVG > 90)
+dfSplit_Low <- df %>% filter(TAVG < 10)
+dfSplit_Mid <- df %>% filter(TAVG > 10 & TAVG < 90)
+
+cor.test(dfSplit_High$`All Deaths`, dfSplit_High$TAVG)
+cor.test(dfSplit_Low$`All Deaths`, dfSplit_Low$TAVG)
+cor.test(dfSplit_Mid$`All Deaths`, dfSplit_Mid$TAVG)
+
+dfSplit_High %>% ggplot(aes(x = TAVG, y = `All Deaths`)) + geom_point()
+dfSplit_Low %>% ggplot(aes(x = TAVG, y = `All Deaths`)) + geom_point()
+dfSplit_Mid %>% ggplot(aes(x = TAVG, y = `All Deaths`)) + geom_point()
+```
+```{r}
+Range <- df %>% filter(!is.na(`All Deaths`)) %>% group_by(City) %>% summarize(
+  deaths_Range = max(`All Deaths`) - min(`All Deaths`),
+  deaths_min = min(`All Deaths`),
+  deaths_max = max(`All Deaths`),
+)
+
+df_w_normal <- df %>% merge(Range) %>% group_by(City) %>% mutate(
+  deaths_normalized = (`All Deaths` - deaths_min) / deaths_Range,
+  by = City
+)
+
+Range
+head(df_w_normal)
+```
+
+```{r}
+dfSplit_High2 <- df_w_normal %>% filter(TAVG > 90)
+dfSplit_Low2 <- df_w_normal %>% filter(TAVG < 10)
+dfSplit_Mid2 <- df_w_normal %>% filter(TAVG > 10 & TAVG < 90)
+
+cor.test(dfSplit_High2$`deaths_normalized`, dfSplit_High2$TAVG)
+cor.test(dfSplit_Low2$`deaths_normalized`, dfSplit_Low2$TAVG)
+cor.test(dfSplit_Mid2$`deaths_normalized`, dfSplit_Mid2$TAVG)
+
+dfSplit_High2 %>% ggplot(aes(x = TAVG, y = `deaths_normalized`)) + geom_point()
+dfSplit_Low2 %>% ggplot(aes(x = TAVG, y = `deaths_normalized`)) + geom_point()
+dfSplit_Mid2 %>% ggplot(aes(x = TAVG, y = `deaths_normalized`)) + geom_point()
+```
+```{r}
+df_w_normal %>% filter(!is.na(deaths_normalized)) %>% ggplot(aes(x = TAVG, y = deaths_normalized, alpha = .25)) + geom_point()
+
+df_w_normal %>% filter(!is.na(deaths_normalized)) %>% group_by(Month) %>% summarize(
+  deaths_normalized = mean(deaths_normalized)
+) %>%
+  ggplot(aes(x = factor(Month), y = deaths_normalized)) + geom_bar(stat = 'identity') + ggtitle("Normalized Deaths by Month")
+
+df_w_normal %>% filter(!is.na(deaths_normalized)) %>% group_by(region, Month) %>% summarize(
+  deaths_normalized = mean(deaths_normalized)
+) %>%
+  ggplot(aes(x = factor(Month), y = deaths_normalized)) + geom_bar(stat = 'identity') + ggtitle("Normalized Deaths by Month by Climate Region") + facet_wrap('region')
+
+df_w_normal %>% filter(!is.na(deaths_normalized)) %>% group_by(City, Month) %>% summarize(
+  deaths_normalized = mean(deaths_normalized) 
+) %>%
+  ggplot(aes(x = factor(Month), y = deaths_normalized)) + geom_bar(stat = 'identity') + ggtitle("Normalized Deaths by Month by City") + facet_wrap('City')
+  
+```
+

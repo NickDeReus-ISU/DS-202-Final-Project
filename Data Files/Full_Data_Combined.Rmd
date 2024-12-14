@@ -125,6 +125,6 @@ head(wm_combined)
 ## Save merged file
 
 ```{r}
-wm_combined %>% write.csv('combined_TAVGxMortality_Data.csv')
+wm_combined %>% write_csv('combined_TAVGxMortality_Data.csv')
 ```
 
