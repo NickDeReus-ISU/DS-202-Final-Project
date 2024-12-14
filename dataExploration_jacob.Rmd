@@ -1,0 +1,112 @@
+---
+title: "dataExploration_Jacob"
+output: html_document
+date: "2024-12-11"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+```
+
+
+- Reading in data
+```{r}
+data_main <- read.csv("Data Files/combined_TAVGxMortality_Data.csv")
+data_main
+```
+
+```{r}
+colnames(myCities)
+
+```
+
+
+```{r}
+#list of the states/cities for observations
+# (Houston, TX) (Memphis, TN) (Seattle, WA) (Indianapolis, IN)
+
+statesList <- c('TX', 'TN', 'WA', 'IN')
+citiesList <- c('Houston', 'Memphis', 'Seattle', 'Indianapolis')
+```
+
+
+**- Questions to be answered**
+5. Define which regions are most affected by certain types of weather? (Which most vulnerable to heat waves and extreme cold)
+6. Do each of the above trends hold when pnumonia deaths (flu seasons) are removed?
+
+
+
+```{r}
+# isolating my cities from the main data set
+myCities <- data_main %>% filter(State %in% statesList) %>% filter(City %in% citiesList)
+myCities
+```
+
+
+- Looking in to question #5
+```{r}
+# 5. Define which regions are most affected by certain types of weather? (Which most vulnerable to heat waves and extreme cold)
+
+# Values to use CDC_Region, 
+
+myCities %>% ggplot(aes(x = Week, y = All.Deaths)) + geom_line() + facet_wrap(~ CDC_Region)
+```
+```{r}
+# testing
+
+# Define thresholds for heat waves and extreme cold
+heat_wave_threshold <- 30  # threshold for heat wave (in degrees Celsius)
+extreme_cold_threshold <- -10  # threshold for extreme cold (in degrees Celsius)
+
+# Identify regions most affected by heat waves
+heat_wave_regions <- myCities %>%
+  filter(TMAX_Max >= heat_wave_threshold) %>%
+  count(region, sort = TRUE)
+heat_wave_regions
+
+# Identify regions most affected by extreme cold
+extreme_cold_regions <- myCities %>%
+  filter(TMIN_Min <= extreme_cold_threshold) %>%
+  count(region, sort = TRUE)
+extreme_cold_regions
+```
+
+
+```{r}
+# Define thresholds for heat waves and extreme cold
+heat_wave_threshold <- 30  # Example threshold for heat wave (in degrees Celsius)
+extreme_cold_threshold <- -10  # Example threshold for extreme cold (in degrees Celsius)
+
+# Filter data for heat waves and extreme cold
+heat_wave_data <- myCities %>%
+  filter(TMAX_Max >= heat_wave_threshold)
+
+extreme_cold_data <- myCities %>%
+  filter(TMIN_Min <= extreme_cold_threshold)
+
+# Calculate average and total deaths during heat waves by week
+heat_wave_deaths <- heat_wave_data %>%
+  group_by(region) %>%
+  summarise(
+    avg_deaths = mean(All.Deaths, na.rm = TRUE),
+    total_deaths = sum(All.Deaths, na.rm = TRUE)
+  )
+heat_wave_deaths
+# Calculate average and total deaths during extreme cold by week
+extreme_cold_deaths <- extreme_cold_data %>%
+  group_by(region) %>%
+  summarise(
+    avg_deaths = mean(All.Deaths, na.rm = TRUE),
+    total_deaths = sum(All.Deaths, na.rm = TRUE)
+  )
+extreme_cold_deaths
+```
+
