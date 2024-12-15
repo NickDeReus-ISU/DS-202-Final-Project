@@ -1,0 +1,116 @@
+---
+title: "Data Science Project - Final 3&4Q"
+author: "Madhu Babu Avula"
+date: "2024-12-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+
+```{r}
+library(dplyr)
+library(tidyverse)
+
+
+deaths <- read.csv("Data Files/Deaths_in_122_U.S._cities_-_1962-2016._122_Cities_Mortality_Reporting_System_20241019.csv")
+stations <- read.csv("Data Files/Station_weather_data.csv")
+
+```
+
+
+### Analysis of Mortality by Age Group
+
+- **Objective**: Analyze how different age groups are affected by mortality and identify the most at-risk population.
+
+
+```{r}
+
+# Summarize total deaths by age group
+age_groups <- c("X.1.year..all.cause.deaths.", "X1.24.years..all.cause.deaths.",
+                "X25.44.years", "X45.64.years..all.cause.deaths.", "X65..years..all.cause.deaths.")
+total_deaths <- colSums(deaths[, age_groups], na.rm = TRUE)
+
+# Calculate percentages
+percent_deaths <- total_deaths / sum(total_deaths) * 100
+
+# Plot the data
+barplot(percent_deaths, names.arg = c("<1 year", "1-24 years", "25-44 years", "45-64 years", "65+ years"),
+        main = "Mortality Distribution by Age Group", ylab = "Percentage of Total Deaths", col = "lightblue")
+
+```
+
+
+
+  
+- **Key Findings**:
+  - The **65+ years** age group accounts for the highest percentage of total deaths, contributing over 60% of mortality.
+  - The **45–64 years** age group is the second most affected, with a significant but smaller share.
+  - Younger age groups, including **<1 year**, **1–24 years**, and **25–44 years**, have considerably lower mortality percentages.
+
+- **Conclusion**:
+  - Older adults (**65+ years**) are the most vulnerable group, indicating a need for targeted health interventions.
+  - The **45–64 years** group also requires attention, but with lower priority compared to seniors.
+
+
+
+
+## Analysis of Weather Events Impacting Mortality
+
+### Objective
+Identify which weather events have the greatest impact on mortality using the NOA
+
+```{r}
+
+
+# Filter existing weather columns
+existing_weather_columns <- intersect(paste0("WT", sprintf("%02d", 1:22)), colnames(stations))
+
+# Merge datasets by date
+# stations$DATE <- as.Date(stations$DATE, "%m/%d/%Y")
+# deaths$Week.Ending.Date <- as.Date(deaths$Week.Ending.Date, "%m/%d/%Y")
+merged_data <- read.csv("Data Files/combined_TAVGxMortality_Data.csv")
+
+existing_weather_columns <- c('TSUN', 'WSFG_Mean', 'AWND', 'PRCP_Sum', 'SNOW_Mean', 'SNWD_Mean')
+
+# Calculate mortality for each weather event
+
+weather_impact <- merged_data %>%
+  select(all_of(existing_weather_columns), All.Deaths) %>%
+  pivot_longer(cols = existing_weather_columns, names_to = "Weather_Event", values_to = "Occurred") %>%
+  filter(Occurred > 0) %>%
+  group_by(Weather_Event) %>%
+  summarize(Total_Deaths = sum(All.Deaths, na.rm = TRUE)) %>%
+  arrange(desc(Total_Deaths))
+
+# Visualize
+barplot(weather_impact$Total_Deaths, 
+        names.arg = weather_impact$Weather_Event,
+        main = "Impact of Weather Events on Mortality",
+        ylab = "Total Deaths", 
+        las = 2,
+        col = "skyblue")
+
+
+```
+
+
+### Key Findings
+- **WT01 (Fog, ice fog, or freezing fog)** and **WT16 (Rain, including freezing rain)** have the highest associated mortality, exceeding 1.4 × 10^8 deaths each.
+- Other weather events with notable impacts include:
+  - **WT08 (Smoke or haze)**
+  - **WT03 (Thunder)**
+  - **WT13 (Mist)**
+  - **WT18 (Snow, snow pellets, or ice crystals)**
+- Events like **WT10 (Tornado, waterspout, or funnel cloud)** and **WT22 (Ice fog)** have minimal impacts on mortality.
+
+### Conclusion
+- **Fog and rain-related events** pose the greatest risks to mortality, likely due to reduced visibility, accidents, or secondary health impacts.
+- **Smoke/haze and snow events** also contribute significantly, highlighting their environmental and safety hazards.
+

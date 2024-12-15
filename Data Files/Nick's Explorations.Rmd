@@ -317,4 +317,77 @@ df_w_normal %>% filter(!is.na(deaths_normalized)) %>% group_by(City, Month) %>% 
   ggplot(aes(x = factor(Month), y = deaths_normalized)) + geom_bar(stat = 'identity') + ggtitle("Normalized Deaths by Month by City") + facet_wrap('City')
   
 ```
+```{r}
+age_groups <- c("<1 year (all cause deaths)", "1-24 years (all cause deaths)",
+                "25-44 years", "45-64 years (all cause deaths)", "65+ years (all cause deaths)")
+
+df %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year, Month) %>% pivot_longer(
+  cols = age_groups,
+  names_to = 'Age_Group',
+  values_to = 'deaths',
+) %>% group_by(Age_Group) %>% mutate(
+   deaths = deaths / `All Deaths`
+)  %>% filter(!is.na(deaths)) %>%  summarise(deaths = mean(deaths)) %>%
+  ggplot(aes(x = Age_Group, y = deaths, fill = Age_Group)) + geom_bar(stat = 'identity',position = "dodge")
+
+df %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year, Month) %>% pivot_longer(
+  cols = age_groups,
+  names_to = 'Age_Group',
+  values_to = 'deaths',
+) %>% group_by(Month, Age_Group) %>% mutate(
+   deaths = deaths / `All Deaths`
+)  %>% filter(!is.na(deaths)) %>%  summarise(deaths = mean(deaths)) %>%
+  ggplot(aes(x = factor(Month), y = deaths, fill = Age_Group )) + geom_bar(stat = 'identity', position = "dodge")
+
+df %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year, Month) %>% pivot_longer(
+  cols = age_groups,
+  names_to = 'Age_Group',
+  values_to = 'deaths',
+) %>% group_by(Month, Age_Group) %>% mutate(
+   deaths = deaths / `All Deaths`
+)  %>% filter(!is.na(deaths) & Age_Group != "65+ years (all cause deaths)" ) %>%  
+  summarise(deaths = mean(deaths)) %>%
+  ggplot(aes(x = factor(Month), y = deaths, fill = Age_Group )) + geom_bar(stat = 'identity', position = "dodge")
+
+df %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year, Month) %>% pivot_longer(
+  cols = age_groups,
+  names_to = 'Age_Group',
+  values_to = 'deaths',
+) %>% group_by(Year, Age_Group) %>% mutate(
+   deaths = deaths / `All Deaths`
+)  %>% filter(!is.na(deaths)) %>%  summarise(deaths = mean(deaths)) %>%
+  ggplot(aes(x = Year, y = deaths, color = Age_Group )) + geom_line()
+
+
+```
+
+```{r}
+df %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year, Month) %>% pivot_longer(
+  cols = age_groups,
+  names_to = 'Age_Group',
+  values_to = 'deaths',
+) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
+   deaths_sd = sd(deaths),
+   deaths_mean = mean(deaths),
+   deathsZ = (deaths - deaths_mean) / deaths_sd,
+) %>% filter(!is.na(deaths) ) %>% group_by(Month, Age_Group) %>%
+  mutate(
+    deathsZ = mean(deathsZ)
+  ) %>% filter(!is.na(deathsZ) ) %>%  
+  ggplot(aes(x = factor(Month), y = deathsZ, fill = Age_Group )) + geom_bar(stat = 'identity', position = 'dodge')
+
+df %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year, Month) %>% pivot_longer(
+  cols = age_groups,
+  names_to = 'Age_Group',
+  values_to = 'deaths',
+) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
+   deaths_sd = sd(deaths),
+   deaths_mean = mean(deaths),
+   deathsZ = (deaths - deaths_mean) / deaths_sd,
+) %>% filter(!is.na(deaths) ) %>% group_by(Month, region, Age_Group) %>%
+  mutate(
+    deathsZ = mean(deathsZ)
+  ) %>% filter(!is.na(deathsZ) ) %>%  
+  ggplot(aes(x = factor(Month), y = deathsZ, fill = Age_Group )) + geom_bar(stat = 'identity', position = 'dodge') + facet_wrap('region')
+```
 
