@@ -16,6 +16,8 @@ library(ggplot2)
 
 ```{r}
 df <- read_csv("combined_TAVGxMortality_Data.csv")
+
+df <- df %>% filter(City != 'Utica')
 ```
 Some initial exploration of All Deaths numbers. There is strong seasonality in all regions with the peak of general mortality in January, then a decrease until October and a fast uptick beginning in December for non-normalized data.
 
@@ -29,6 +31,9 @@ dfStats <- df %>% group_by(City) %>% filter(!is.na(`All Deaths`)) %>% summarize(
 )
 
 df2 <- merge(df, dfStats)
+
+df2 <- df2 %>% filter((City != "Utica"))
+
 ```
 
 ```{r}
@@ -133,6 +138,8 @@ dfStats2 <- dfControlled %>% group_by(City) %>% filter(!is.na(`All Deaths`)) %>%
 )
 
 df3 <- merge(df, dfStats2)
+
+df3 <- df3 %>% filter(City != 'Utica')
 ```
 
 ```{r}
@@ -189,10 +196,10 @@ df2 %>% filter(!is.na(`All Deaths`)) %>% group_by(Year) %>% summarize(
 ) %>%
   ggplot(aes(x = Year, y = deaths) ) + geom_line()
 
-df2 %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year) %>% summarize(
+df2 %>% filter(!is.na(`All Deaths`)) %>% group_by(Year, region) %>% summarize(
   deaths = sum(`All Deaths`)
 ) %>%
-  ggplot(aes(x = Year, y = deaths, color = City) ) + geom_line()
+  ggplot(aes(x = Year, y = deaths, color = factor(region)) ) + geom_line()
 ```
 
 A look at the pnumonia deaths data.

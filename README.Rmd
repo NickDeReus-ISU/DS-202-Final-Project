@@ -33,7 +33,7 @@ We shall endeavor to answer the following questions:
 6. Do each of the above trends hold when pnumonia deaths (flu seasons) are removed?
 
 ```{R, echo = FALSE} 
-allData <- read.csv("Data Files/combined_TAVGxMortality_Data.csv")
+allData <- read.csv("Data Files/combined_TAVGxMortality_Data.csv") %>% filter(City != 'Utica')
 ```
 
 ## Data
@@ -262,36 +262,124 @@ wm_combined <- merge(mortality_small, TAVG_weekly)
 
 ### Final Data Shape
 
+### Basic Observations of from the Dataset
+
+#### Average Annual Temperature Over Time
+
+We find that the locations in our dataset have seen a progressive increase in average temperatures over the time since the beginning of the time period in 1962.
+
+```{r}
+allData %>% filter(!is.na(`TAVG`)) %>% group_by(Year) %>% summarize(
+  Avg = mean(`TAVG`)
+) %>%
+  ggplot(aes(x = Year, y = Avg, color = Year) ) + geom_line() + ggtitle('Annual Average Temperature') + scale_color_gradient(low = "pink", high = "darkred" ) + ylab("Average Temperature") + theme(legend.position = "none")
+```
+
+When charted by region, we can see that this increase in average temperatures is felt across all climate regions, but is most obvious in region 6, the coolest region.
+
+```{r}
+allData %>% filter(!is.na(`TAVG`)) %>% group_by(region, Year) %>% summarize(
+  Avg = mean(`TAVG`)
+) %>%
+  ggplot(aes(x = Year, y = Avg, color = factor(region)) ) + geom_line() + ggtitle('Annual Average Temperature by Region') + ylab("Average Temperature")
+```
+
+#### Seasonality of Temperature
+
+```{r}
+allData %>% filter(!is.na(`TAVG`)) %>% group_by(Month) %>% summarize(
+  Avg = mean(`TAVG`)
+) %>%
+  ggplot(aes(x = Month %>% factor(), y = Avg, fill = Avg)) + geom_bar(stat = 'identity') + ggtitle('Average Temperature by Month') + scale_fill_gradient(low = "pink", high = "darkred" ) + ylab("Average Temperature") + xlab("Month") + theme(legend.position = "none")
+```
+
+```{r}
+allData %>% filter(!is.na(`TAVG`)) %>% group_by(region, Month) %>% summarize(
+  Avg = mean(`TAVG`)
+) %>%
+  ggplot(aes(x = Month %>% factor(), y = Avg, fill = Avg)) + geom_bar(stat = 'identity') + facet_wrap('region') + ggtitle('Average Temperature by Month') + scale_fill_gradient(low = "pink", high = "darkred" ) + ylab("Average Temperature") + xlab("Month") + theme(legend.position = "none")
+```
+
+#### Distribution of Daily Average Temperatures
+
+```{r}
+allData %>% filter(!is.na(`TAVG`)) %>% group_by(region) %>% ggplot(aes(x = TAVG, )) + geom_histogram(binwidth = 5, fill = 'darkred') + ggtitle('Average Temperature Histogram') + ylab("Count") + xlab("Average Temperature (F)") + theme(legend.position = "none") 
+```
+
 ## Results
 
 ### Seasonal trends in mortality rates
 
-### Create lists of the cities that I'm making observations on
+After normalizing death counts across our regions we find that death rates accross our sample set are significantly higher on avg during the winter season and lower in summer months.
+
+```{r}
+# Normalize Deaths
+dfStats <- allData %>% group_by(City) %>% filter(!is.na(All.Deaths)) %>% summarize(
+  All_Deaths_mm = mean(All.Deaths),
+  All_Deaths_msd = sd(All.Deaths),
+)
+
+df2 <- merge(allData, dfStats)
+
+df2 %>% group_by(City, Month) %>% 
+  reframe(
+    deathsZ = (`All.Deaths` - All_Deaths_mm) / All_Deaths_mm
+  ) %>% filter(!is.na(deathsZ)) %>% group_by(Month) %>% reframe(
+    deathsZ = mean(deathsZ)
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             fill = deathsZ,
+             ) 
+         ) + 
+  geom_bar(stat = 'identity',) + ylab("% difference from mean deaths") + xlab("Month") + scale_fill_gradient(low = "pink", high = "darkred" ) + theme(legend.position = "none")
+```
+
+
+
 ```{R}
+### Create lists of the cities that I'm making observations on
 myStatesList <- c('FL', 'CA', 'KS', 'CO')
 myCitiesList <- c('Miami', 'Fresno', 'Wichita', 'Colorado Springs')
 ```
 
+When we break down the data regionally we can see that colder regions have more highly seasonal effects on mortality, but even very warm regions suffer higher mortality in the winter months.
+
+We hypothesize that there are behavioral factors behind the increased winter mortality, but we aren't able to explore that here. At the very least we can assume that weather cannot be the only, or even the most major, factor behind these findings.
+
+```{R}
 ### Filter data down to focused cities
 ### Deaths seem to be higher on average in the Winter Months
 ### Fresno in Region 3, specifically, saw jumps in mortality November through March each year
 ### Miami, in Region 2, reported a jump in mortality count between June and July in years 
-```{R}
-myCitiesData <- allData %>%
-  filter(State %in% myStatesList) %>% filter(City %in% myCitiesList)
+# myCitiesData <- allData %>%
+#   filter(State %in% myStatesList) %>% filter(City %in% myCitiesList)
+# 
+# monthlyDeathsSummed<- myCitiesData %>%
+#   group_by(Month, Year, City) %>%
+#   summarise(total = sum(All.Deaths))
+# 
+# ggplot(monthlyDeathsSummed, aes(x=Month, y=total, color=City)) + 
+#   geom_point() + 
+#   facet_wrap(~Year, scales="free_x") +
+#   labs(
+#     title = "Total Deaths by Month",
+#     x = "Month",
+#     y = "Total Deaths"
+#   )
 
-monthlyDeathsSummed<- myCitiesData %>%
-  group_by(Month, Year, City) %>%
-  summarise(total = sum(All.Deaths))
-
-ggplot(monthlyDeathsSummed, aes(x=Month, y=total, color=City)) + 
-  geom_point() + 
-  facet_wrap(~Year, scales="free_x") +
-  labs(
-    title = "Total Deaths by Month",
-    x = "Month",
-    y = "Total Deaths"
-  )
+df2 %>% group_by(region, City, Month) %>% 
+  reframe(
+    deathsZ = (`All.Deaths` - All_Deaths_mm) / All_Deaths_mm
+  ) %>% filter(!is.na(deathsZ)) %>% group_by(region, Month) %>% reframe(
+    deathsZ = mean(deathsZ)
+  ) %>%
+  ggplot(aes( x = as.factor(Month),
+             y = deathsZ,
+             fill = deathsZ,
+             ) 
+         ) + 
+  geom_bar(stat = 'identity',) + ylab("% difference from mean deaths") + xlab("Month") + scale_fill_gradient(low = "pink", high = "darkred" ) + facet_wrap(~region) + theme(legend.position = "none")
 ```
 
 

@@ -253,27 +253,58 @@ Finally combine weather and mortality data
 
 ### Final Data Shape
 
+### Basic Observations of from the Dataset
+
+#### Average Annual Temperature Over Time
+
+We find that the locations in our dataset have seen a progressive
+increase in average temperatures over the time since the beginning of
+the time period in 1962.
+
+![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+When charted by region, we can see that this increase in average
+temperatures is felt across all climate regions, but is most obvious in
+region 6, the coolest region.
+
+    ## `summarise()` has grouped output by 'region'. You can override using the
+    ## `.groups` argument.
+
+![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+#### Seasonality of Temperature
+
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+    ## `summarise()` has grouped output by 'region'. You can override using the
+    ## `.groups` argument.
+
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+#### Distribution of Daily Average Temperatures
+
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
 ## Results
 
 ### Seasonal trends in mortality rates
 
-### Create lists of the cities that I’m making observations on
+After normalizing death counts across our regions we find that death
+rates accross our sample set are significantly higher on avg during the
+winter season and lower in summer months.
 
-### Filter data down to focused cities
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-### Deaths seem to be higher on average in the Winter Months
+When we break down the data regionally we can see that colder regions
+have more highly seasonal effects on mortality, but even very warm
+regions suffer higher mortality in the winter months.
 
-### Fresno in Region 3, specifically, saw jumps in mortality November through March each year
+We hypothesize that there are behavioral factors behind the increased
+winter mortality, but we aren’t able to explore that here. At the very
+least we can assume that weather cannot be the only, or even the most
+major, factor behind these findings.
 
-### Miami, in Region 2, reported a jump in mortality count between June and July in years
-
-    ## `summarise()` has grouped output by 'Month', 'Year'. You can override using the
-    ## `.groups` argument.
-
-    ## Warning: Removed 32 rows containing missing values or values outside the scale range
-    ## (`geom_point()`).
-
-![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ### Correlation between temperature and Mortality
 
@@ -281,10 +312,10 @@ Finally combine weather and mortality data
 
 #### Plot of the mean of the minimum monthly temperature plotted against the total deaths occurring at those temperatures
 
-    ## Warning: Removed 204 rows containing non-finite outside the scale range
+    ## Warning: Removed 145 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 #### Region 2 sees the highest death counts at maximum temperatures near 90, with death counts sharply increasing as the max temperature approaches that value. This region’s mortality rates do not seem as affected by temperatures below 35, likely due to a generally higher climate and not seeing temperatures that low.
 
@@ -293,18 +324,18 @@ Finally combine weather and mortality data
 Plot of the mean of the maximum monthly temperature plotted against the
 total deaths occurring at those temperatures, grouped by Region
 
-    ## Warning: Removed 188 rows containing non-finite outside the scale range
+    ## Warning: Removed 142 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 Plot of the mean of the minimum monthly temperature plotted against the
 total deaths occurring at those temperatures
 
-    ## Warning: Removed 204 rows containing non-finite outside the scale range
+    ## Warning: Removed 145 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ### Differences in effects by age group
 
