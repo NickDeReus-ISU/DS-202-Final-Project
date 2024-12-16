@@ -369,14 +369,15 @@ df %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year, Month) %>% pivot_lo
 ```
 
 ```{r}
-df %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year, Month) %>% pivot_longer(
+
+df %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Month) %>% pivot_longer(
   cols = age_groups,
   names_to = 'Age_Group',
   values_to = 'deaths',
 ) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
    deaths_sd = sd(deaths),
    deaths_mean = mean(deaths),
-   deathsZ = (deaths - deaths_mean) / deaths_sd,
+   deathsZ = (deaths - deaths_mean) / deaths_mean,
 ) %>% filter(!is.na(deaths) ) %>% group_by(Month, Age_Group) %>%
   mutate(
     deathsZ = mean(deathsZ)
@@ -390,11 +391,112 @@ df %>% filter(!is.na(`All Deaths`)) %>% group_by(City, Year, Month) %>% pivot_lo
 ) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
    deaths_sd = sd(deaths),
    deaths_mean = mean(deaths),
-   deathsZ = (deaths - deaths_mean) / deaths_sd,
+   deathsZ = (deaths - deaths_mean) / deaths_mean,
 ) %>% filter(!is.na(deaths) ) %>% group_by(Month, region, Age_Group) %>%
   mutate(
     deathsZ = mean(deathsZ)
   ) %>% filter(!is.na(deathsZ) ) %>%  
   ggplot(aes(x = factor(Month), y = deathsZ, fill = Age_Group )) + geom_bar(stat = 'identity', position = 'dodge') + facet_wrap('region')
+```
+
+```{r}
+normal_data <- df
+
+# Define thresholds for heat waves and extreme cold
+heat_wave_threshold <- 85  # threshold for heat wave (in degrees Celsius)
+extreme_cold_threshold <- 15  # threshold for extreme cold (in degrees Celsius)
+
+# Identify regions most affected by heat waves
+heat_wave_regions <- normal_data %>%
+  filter(TMAX_Max >= heat_wave_threshold) %>%
+  count(region, sort = TRUE)
+heat_wave_regions
+
+# Identify regions most affected by extreme cold
+extreme_cold_regions <- normal_data %>%
+  filter(TMIN_Min <= extreme_cold_threshold) %>%
+  count(region, sort = TRUE)
+extreme_cold_regions
+
+# Calculate average mortality during normal conditions
+normal_mortality <- normal_data %>% group_by(City) %>%
+  summarise(avg_deaths = mean('All Deaths', na.rm = TRUE))
+
+# Calculate average mortality during heat waves
+heat_wave_mortality <- heat_wave_data %>% group_by(City) %>%
+  summarise(avg_deaths = mean('All Deaths', na.rm = TRUE))
+
+# Calculate average mortality during extreme cold
+extreme_cold_mortality <- extreme_cold_data %>% group_by(City) %>%
+  summarise(avg_deaths = mean('All Deaths', na.rm = TRUE))
+
+# Calculate differences in mortality rates
+mortality_diff <- data.frame(
+  Condition = c("Normal", "Heat Wave", "Extreme Cold"),
+  Avg_Deaths = c(normal_mortality$avg_deaths, heat_wave_mortality$avg_deaths, extreme_cold_mortality$avg_deaths)
+)
+
+mortality_diff <- mortality_diff %>%
+  mutate(Difference = Avg_Deaths - normal_mortality$avg_deaths)
+
+mortality_diff
+
+# Plot the differences in mortality rates
+ggplot(mortality_diff, aes(x = Condition, y = Difference, fill = Condition)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Difference in Mortality Rates During Extreme Weather Conditions",
+       x = "Condition",
+       y = "Difference in Average Deaths",
+       fill = "Condition")
+```
+
+```{r}
+df2 %>% filter(!is.na(TAVG)) %>% group_by(City, Year, Week) %>% mutate(
+  TempCondition = if(mean(TAVG) > 85) {"Heat+"} else if (mean(TAVG) < 20) {"Cold+"} else {'normal'},
+) %>% 
+  
+  group_by(City, Week) %>% filter(!is.na(`All Deaths`)) %>% 
+  mutate(
+    mean_deaths = mean(`All Deaths`),
+) %>% 
+  group_by(City, Year, Week) %>% 
+  mutate(
+    normalized = (`All Deaths` - mean_deaths) / mean_deaths
+    ) %>% 
+  filter(!is.na(normalized)) %>% group_by(TempCondition) %>% reframe(
+  normalized = mean(normalized)
+  ) %>% ggplot(aes(x = TempCondition, y = normalized, fill = TempCondition)) + geom_bar(stat = 'identity', position = 'dodge')
+
+
+```
+
+```{r}
+df2 %>% filter(!is.na(TAVG)) %>% group_by(City, Year, Week) %>% mutate(
+  TempCondition = if(mean(TAVG) > 85) {"Heat+"} else if (mean(TAVG) < 20) {"Cold+"} else {'normal'},
+) %>% 
+  
+  group_by(City, Week) %>% filter(!is.na(`All Deaths`)) %>% 
+  mutate(
+    mean_deaths = mean(`All Deaths`),
+) %>% 
+  group_by(City, Year, Week) %>% 
+  mutate(
+    normalized = (`All Deaths` - mean_deaths) / mean_deaths
+    ) %>% 
+  filter(!is.na(normalized)) %>% ggplot(aes(x = TAVG, y = normalized, color = TempCondition)) + geom_point()
+
+df2 %>% filter(!is.na(TAVG)) %>% group_by(City, Year, Week) %>% mutate(
+  TempCondition = if(mean(TAVG) > 85) {"Heat+"} else if (mean(TAVG) < 20) {"Cold+"} else {'normal'},
+) %>% 
+  
+  group_by(City, Week) %>% filter(!is.na(`All Deaths`)) %>% 
+  mutate(
+    mean_deaths = mean(`All Deaths`),
+) %>% 
+  group_by(City, Year, Week) %>% 
+  mutate(
+    normalized = (`All Deaths` - mean_deaths) / mean_deaths
+    ) %>% group_by(TAVG) %>% reframe(mean_deaths = mean(normalized)) %>% ggplot(aes(x = TAVG, y = mean_deaths)) + geom_point()
 ```
 
