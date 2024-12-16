@@ -318,33 +318,73 @@ major, factor behind these findings.
     ## Warning: Removed 145 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
-
-#### Region 2 sees the highest death counts at maximum temperatures near 90, with death counts sharply increasing as the max temperature approaches that value. This region’s mortality rates do not seem as affected by temperatures below 35, likely due to a generally higher climate and not seeing temperatures that low.
-
-#### Region 6 confirms the earlier held suspicion of a colder climate holding a higher mortality rate at lower temperatures than that of higher climates. This region has two mortality rate spikes: One where the max temperature approaches 75, and another where it is close to 30. However, the mortality rate seems to be fairly consistent at minimum temperatures between 35 and 60 in region 6
-
-Plot of the mean of the maximum monthly temperature plotted against the
-total deaths occurring at those temperatures, grouped by Region
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- --> Region 2
+sees the highest death counts at maximum temperatures near 90, with
+death counts sharply increasing as the max temperature approaches that
+value. This region’s mortality rates do not seem as affected by
+temperatures below 35, likely due to a generally higher climate and not
+seeing temperatures that low. Region 6 confirms the earlier held
+suspicion of a colder climate holding a higher mortality rate at lower
+temperatures than that of higher climates. This region has two mortality
+rate spikes: One where the max temperature approaches 75, and another
+where it is close to 30. However, the mortality rate seems to be fairly
+consistent at minimum temperatures between 35 and 60 in region 6
 
     ## Warning: Removed 142 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
-![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
-
-Plot of the mean of the minimum monthly temperature plotted against the
-total deaths occurring at those temperatures
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- --> Plot of the
+mean of the maximum monthly temperature plotted against the total deaths
+occurring at those temperatures, grouped by Region
 
     ## Warning: Removed 145 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- --> Plot of the
+mean of the minimum monthly temperature plotted against the total deaths
+occurring at those temperatures
 
 ### Differences in effects by age group
+
+- **Key Findings**:
+  - The **65+ years** age group accounts for the highest percentage of
+    total deaths, contributing over 60% of mortality.
+  - The **45–64 years** age group is the second most affected, with a
+    significant but smaller share.
+  - Younger age groups, including **\<1 year**, **1–24 years**, and
+    **25–44 years**, have considerably lower mortality percentages.
+- **Conclusion**:
+  - Older adults (**65+ years**) are the most vulnerable group,
+    indicating a need for targeted health interventions.
+  - The **45–64 years** group also requires attention, but with lower
+    priority compared to seniors.
 
 ![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ### Effects of Seasonality by Age Group
+
+### Key Findings
+
+- **WT01 (Fog, ice fog, or freezing fog)** and **WT16 (Rain, including
+  freezing rain)** have the highest associated mortality, exceeding 1.4
+  × 10^8 deaths each.
+- Other weather events with notable impacts include:
+  - **WT08 (Smoke or haze)**
+  - **WT03 (Thunder)**
+  - **WT13 (Mist)**
+  - **WT18 (Snow, snow pellets, or ice crystals)**
+- Events like **WT10 (Tornado, waterspout, or funnel cloud)** and **WT22
+  (Ice fog)** have minimal impacts on mortality.
+
+### Conclusion
+
+- **Fog and rain-related events** pose the greatest risks to mortality,
+  likely due to reduced visibility, accidents, or secondary health
+  impacts.
+- **Smoke/haze and snow events** also contribute significantly,
+  highlighting their environmental and safety hazards.
+
+<!-- -->
 
     ## Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
     ## ℹ Please use `all_of()` or `any_of()` instead.
