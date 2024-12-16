@@ -386,8 +386,8 @@ df2 %>% group_by(region, City, Month) %>%
 ### Correlation between temperature and Mortality 
 
 ```{R}
-ourStatesList <- c('FL', 'CA', 'KS', 'CO', 'TX', 'TN', 'WA', 'IN', 'AZ', 'AR', 'IN', 'MA', 'NY', 'MN', 'WI')
-ourCitiesList <- c('Miami', 'Fresno', 'Wichita', 'Colorado Springs', 'Pheonix', 'Little Rock', 'Evansville', 'Boston', 'Houston', 'Memphis', 'Seattle', 'Indianapolis', 'Utica', 'Minneapolis', 'Saint Paul', 'Milwaukee')
+ourStatesList <- c('FL', 'CA', 'KS', 'CO', 'TX', 'TN', 'WA', 'IN', 'AZ', 'AR', 'IN', 'MA', 'MN', 'WI')
+ourCitiesList <- c('Miami', 'Fresno', 'Wichita', 'Colorado Springs', 'Pheonix', 'Little Rock', 'Evansville', 'Boston', 'Houston', 'Memphis', 'Seattle', 'Indianapolis', 'Minneapolis', 'Saint Paul', 'Milwaukee')
 
 ourCitiesData <- allData %>%
   filter(State %in% ourStatesList) %>% filter(City %in% ourCitiesList)
