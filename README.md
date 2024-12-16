@@ -253,19 +253,24 @@ Finally combine weather and mortality data
 
 ### Final Data Shape
 
+## Results
+
 ### Basic Observations of from the Dataset
 
 #### Average Annual Temperature Over Time
 
 We find that the locations in our dataset have seen a progressive
 increase in average temperatures over the time since the beginning of
-the time period in 1962.
+the time period in 1962. We can’t use this to prove global warming
+necessarily because these locations are all likely subject to the Heat
+Island effect, but the experience of people living in these locations is
+one of increasing average temperature.
 
 ![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 When charted by region, we can see that this increase in average
 temperatures is felt across all climate regions, but is most obvious in
-region 6, the coolest region.
+Region 6, which is the coolest region.
 
     ## `summarise()` has grouped output by 'region'. You can override using the
     ## `.groups` argument.
@@ -285,12 +290,10 @@ region 6, the coolest region.
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-## Results
-
 ### Seasonal trends in mortality rates
 
 After normalizing death counts across our regions we find that death
-rates accross our sample set are significantly higher on avg during the
+rates across our sample set are significantly higher on avg during the
 winter season and lower in summer months.
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
@@ -338,6 +341,25 @@ total deaths occurring at those temperatures
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ### Differences in effects by age group
+
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+### Effects of Seasonality by Age Group
+
+    ## Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
+    ## ℹ Please use `all_of()` or `any_of()` instead.
+    ##   # Was:
+    ##   data %>% select(age_groups)
+    ## 
+    ##   # Now:
+    ##   data %>% select(all_of(age_groups))
+    ## 
+    ## See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ### The effect of various weather events on mortality
 

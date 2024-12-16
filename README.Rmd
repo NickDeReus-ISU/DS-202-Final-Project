@@ -262,11 +262,13 @@ wm_combined <- merge(mortality_small, TAVG_weekly)
 
 ### Final Data Shape
 
+## Results
+
 ### Basic Observations of from the Dataset
 
 #### Average Annual Temperature Over Time
 
-We find that the locations in our dataset have seen a progressive increase in average temperatures over the time since the beginning of the time period in 1962.
+We find that the locations in our dataset have seen a progressive increase in average temperatures over the time since the beginning of the time period in 1962. We can't use this to prove global warming necessarily because these locations are all likely subject to the Heat Island effect, but the experience of people living in these locations is one of increasing average temperature.
 
 ```{r}
 allData %>% filter(!is.na(`TAVG`)) %>% group_by(Year) %>% summarize(
@@ -275,7 +277,7 @@ allData %>% filter(!is.na(`TAVG`)) %>% group_by(Year) %>% summarize(
   ggplot(aes(x = Year, y = Avg, color = Year) ) + geom_line() + ggtitle('Annual Average Temperature') + scale_color_gradient(low = "pink", high = "darkred" ) + ylab("Average Temperature") + theme(legend.position = "none")
 ```
 
-When charted by region, we can see that this increase in average temperatures is felt across all climate regions, but is most obvious in region 6, the coolest region.
+When charted by region, we can see that this increase in average temperatures is felt across all climate regions, but is most obvious in Region 6, which is the coolest region.
 
 ```{r}
 allData %>% filter(!is.na(`TAVG`)) %>% group_by(region, Year) %>% summarize(
@@ -283,6 +285,7 @@ allData %>% filter(!is.na(`TAVG`)) %>% group_by(region, Year) %>% summarize(
 ) %>%
   ggplot(aes(x = Year, y = Avg, color = factor(region)) ) + geom_line() + ggtitle('Annual Average Temperature by Region') + ylab("Average Temperature")
 ```
+
 
 #### Seasonality of Temperature
 
@@ -303,14 +306,12 @@ allData %>% filter(!is.na(`TAVG`)) %>% group_by(region, Month) %>% summarize(
 #### Distribution of Daily Average Temperatures
 
 ```{r}
-allData %>% filter(!is.na(`TAVG`)) %>% group_by(region) %>% ggplot(aes(x = TAVG, )) + geom_histogram(binwidth = 5, fill = 'darkred') + ggtitle('Average Temperature Histogram') + ylab("Count") + xlab("Average Temperature (F)") + theme(legend.position = "none") 
+allData %>% filter(!is.na(`TAVG`)) %>% group_by(region) %>% ggplot(aes(x = TAVG, )) + geom_histogram(binwidth = 5, fill = 'darkred', color = 'black') + ggtitle('Average Temperature Histogram') + ylab("Count") + xlab("Average Temperature (F)") + theme(legend.position = "none") 
 ```
-
-## Results
 
 ### Seasonal trends in mortality rates
 
-After normalizing death counts across our regions we find that death rates accross our sample set are significantly higher on avg during the winter season and lower in summer months.
+After normalizing death counts across our regions we find that death rates across our sample set are significantly higher on avg during the winter season and lower in summer months.
 
 ```{r}
 # Normalize Deaths
@@ -382,8 +383,6 @@ df2 %>% group_by(region, City, Month) %>%
   geom_bar(stat = 'identity',) + ylab("% difference from mean deaths") + xlab("Month") + scale_fill_gradient(low = "pink", high = "darkred" ) + facet_wrap(~region) + theme(legend.position = "none")
 ```
 
-
-
 ### Correlation between temperature and Mortality 
 
 ```{R}
@@ -413,6 +412,44 @@ ggplot(ourCitiesData, aes(x=TMIN_Mean, weight=All.Deaths)) + geom_histogram(bins
 ```
 
 ### Differences in effects by age group
+
+```{r}
+# Summarize total deaths by age group
+age_groups <- c("X.1.year..all.cause.deaths.", "X1.24.years..all.cause.deaths.",
+                "X25.44.years", "X45.64.years..all.cause.deaths.", "X65..years..all.cause.deaths.")
+total_deaths <- colSums(allData[, age_groups], na.rm = TRUE)
+
+# Calculate percentages
+percent_deaths <- total_deaths / sum(total_deaths) * 100
+
+# Plot the data
+barplot(percent_deaths, names.arg = c("<1 year", "1-24 years", "25-44 years", "45-64 years", "65+ years"),
+        main = "Mortality Distribution by Age Group", ylab = "Percentage of Total Deaths", col = "darkred")
+```
+
+### Effects of Seasonality by Age Group
+
+```{r}
+# Summarize total deaths by age group
+age_groups <- c("X.1.year..all.cause.deaths.", "X1.24.years..all.cause.deaths.",
+                "X25.44.years", "X45.64.years..all.cause.deaths.", "X65..years..all.cause.deaths.")
+
+allData %>% filter(!is.na(`All.Deaths`)) %>% group_by(City, Month) %>% pivot_longer(
+  cols = age_groups,
+  names_to = 'Age_Group',
+  values_to = 'deaths',
+) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
+   deaths_sd = sd(deaths),
+   deaths_mean = mean(deaths),
+   deathsZ = (deaths - deaths_mean) / deaths_mean,
+) %>% filter(!is.na(deaths) ) %>% group_by(Month, Age_Group) %>%
+  mutate(
+    deathsZ = mean(deathsZ)
+  ) %>% filter(!is.na(deathsZ) ) %>%  
+  ggplot(aes(x = factor(Month), y = deathsZ, fill = Age_Group )) + geom_bar(stat = 'identity', position = 'dodge') + labs(title = "Seasonal Mortality Anomaly by Age Group", y = "Deaths as % of mean", x = 'Month', fill = "Age Group") + scale_fill_discrete(labels = c("<1 year (all cause deaths)", "1-24 years (all cause deaths)",
+                "25-44 years", "45-64 years (all cause deaths)", "65+ years (all cause deaths)"))
+```
+
 
 ### The effect of various weather events on mortality
 #### Regional Effects
