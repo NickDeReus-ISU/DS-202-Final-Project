@@ -477,7 +477,287 @@ allData %>% filter(!is.na(`All.Deaths`)) %>% group_by(City, Month) %>% pivot_lon
 
 ### Relative Vulnerability to Weather Events by Region
 
+**Specific question #5:** Define which regions are most affected by certain types of weather? (Which most vulnerable to heat waves and extreme cold)
+
+```{r}
+# Define thresholds for heat waves and extreme cold
+heat_wave_threshold <- 90  # Threshold for heat wave (in degrees Fahrenheit)
+extreme_cold_threshold <- 15  # Threshold for extreme cold (in degrees Fahrenheit)
+
+# Filter data for heat waves, extreme cold, normal conditions(temperatures between the thresholds)
+heat_wave_data <- data_main %>%
+  filter(TMAX_Max >= heat_wave_threshold)
+
+extreme_cold_data <- data_main %>%
+  filter(TMIN_Min <= extreme_cold_threshold)
+
+normal_data <- data_main %>%
+  filter(TMAX_Max < heat_wave_threshold & TMIN_Min > extreme_cold_threshold)
+
+
+# Calculate average and total deaths during heat waves by week
+heat_wave_deaths <- heat_wave_data %>%
+  group_by(region) %>%
+  summarise(
+    avg_deaths = mean(All.Deaths, na.rm = TRUE),
+    total_deaths = sum(All.Deaths, na.rm = TRUE)) %>% 
+  arrange(desc(total_deaths))
+
+# Calculate average and total deaths during extreme cold by week
+extreme_cold_deaths <- extreme_cold_data %>%
+  group_by(region) %>%
+  summarise(
+    avg_deaths = mean(All.Deaths, na.rm = TRUE),
+    total_deaths = sum(All.Deaths, na.rm = TRUE)) %>% 
+  arrange(desc(total_deaths))
+```
+
+
+**Deaths during Heat Wave/Extreme Cold/General Conditions**
+```{r}
+# custom colors for each region
+custom_colors <- c(
+  "1" = "#1f77b4",
+  "2" = "#ff7f0e",
+  "3" = "#2ca02c",
+  "4" = "#d62728",
+  "5" = "#9467bd",  
+  "6" = "#8c564b"   
+)
+
+
+# Summarize data by week and region (general)
+data_summary <- data_main %>%
+  group_by(region, Week) %>%
+  summarise(All.Deaths = sum(All.Deaths, na.rm = TRUE))
+
+# Plot multiple lines based on region with custom colors
+ggplot(data_summary, aes(x = Week, y = All.Deaths, color = as.factor(region), group = region)) +
+  geom_line(size = 1) +
+  scale_color_manual(values = custom_colors) +
+  theme_minimal() +
+  labs(title = "All Deaths by Week and Region (General Conditions)",
+       x = "Week",
+       y = "All.Deaths",
+       color = "Region")
+
+#--------------------------------------------------
+  
+# Summarize data by week and region (heat wave)
+data_summary_heat_wave <- heat_wave_data %>%
+  group_by(region, Week) %>%
+  summarise(All.Deaths = sum(All.Deaths, na.rm = TRUE))
+
+# Plot multiple lines based on region with custom colors
+ggplot(data_summary_heat_wave, aes(x = Week, y = All.Deaths, color = as.factor(region), group = region)) +
+  geom_line(size = 1) +
+  scale_color_manual(values = custom_colors) +
+  theme_minimal() +
+  labs(title = "All Deaths by Week and Region (During Heat Waves)",
+       x = "Week",
+       y = "All.Deaths",
+       color = "Region")
+
+#--------------------------------------------------
+
+# Summarize data by week and region (extreme cold)
+data_summary_extreme_cold <- extreme_cold_data %>%
+  group_by(region, Week) %>%
+  summarise(All.Deaths = sum(All.Deaths, na.rm = TRUE))
+
+# Plot multiple lines based on region with custom colors
+ggplot(data_summary_extreme_cold, aes(x = Week, y = All.Deaths, color = as.factor(region), group = region)) +
+  geom_line(size = 1) +
+  scale_color_manual(values = custom_colors) +
+  theme_minimal() +
+  labs(title = "All Deaths by Week and Region (During extreme cold)",
+       x = "Week",
+       y = "All.Deaths",
+       color = "Region")
+```
+
+**Difference between mortality during heat waves/freezes compared to normal**
+```{r}
+# Calculate average mortality during normal conditions
+normal_mortality <- normal_data %>%
+  summarise(avg_deaths = mean(All.Deaths, na.rm = TRUE))
+
+# Calculate average mortality during heat waves
+heat_wave_mortality <- heat_wave_data %>%
+  summarise(avg_deaths = mean(All.Deaths, na.rm = TRUE))
+
+# Calculate average mortality during extreme cold
+extreme_cold_mortality <- extreme_cold_data %>%
+  summarise(avg_deaths = mean(All.Deaths, na.rm = TRUE))
+
+# Calculate differences in mortality rates
+mortality_diff <- data.frame(
+  Condition = c("Normal", "Heat Wave", "Extreme Cold"),
+  Avg_Deaths = c(normal_mortality$avg_deaths, heat_wave_mortality$avg_deaths, extreme_cold_mortality$avg_deaths)
+)
+
+mortality_diff <- mortality_diff %>%
+  mutate(Difference = Avg_Deaths / normal_mortality$avg_deaths)
+
+mortality_diff
+
+# Visualizing the differences in mortality rates
+ggplot(mortality_diff, aes(x = Condition, y = Difference, fill = Condition)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Difference in Mortality Rates During Extreme Weather Conditions",
+       x = "Condition",
+       y = "Difference in Average Deaths",
+       fill = "Condition")
+```
+
+
+```{r}
+# Calculate average mortality during normal conditions, grouped by city
+normal_mortality <- normal_data %>%
+  group_by(City) %>%
+  summarise(avg_deaths_normal = mean(All.Deaths, na.rm = TRUE))
+
+# Calculate average mortality during heat waves, grouped by city
+heat_wave_mortality <- heat_wave_data %>%
+  group_by(City) %>%
+  summarise(avg_deaths_heat_wave = mean(All.Deaths, na.rm = TRUE))
+
+# Calculate average mortality during extreme cold, grouped by city
+extreme_cold_mortality <- extreme_cold_data %>%
+  group_by(City) %>%
+  summarise(avg_deaths_extreme_cold = mean(All.Deaths, na.rm = TRUE))
+
+# Combining the Mortality Rates data into one data frame
+mortality_diff <- normal_mortality %>%
+  left_join(heat_wave_mortality, by = "City") %>%
+  left_join(extreme_cold_mortality, by = "City") %>%
+  mutate(
+    heat_wave_diff = (avg_deaths_heat_wave / avg_deaths_normal),
+    extreme_cold_diff = (avg_deaths_extreme_cold / avg_deaths_normal))
+
+mortality_diff
+
+# Visualizing the Results + Reshape the data for plotting
+mortality_diff_long <- mortality_diff %>%
+  pivot_longer(cols = c(heat_wave_diff, extreme_cold_diff), names_to = "Condition", values_to = "Difference")
+
+# Plot the differences in mortality rates by city
+ggplot(mortality_diff_long, aes(x = City, y = Difference, fill = Condition)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Percentage difference in Mortality Rates During Extreme Weather 
+       Conditions by City",
+       x = "City",
+       y = "Percentage difference in Average Deaths",
+       fill = "Condition") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+- **Key Findings**:
+  - In total **Normal** and **Heat wave** average deaths are very similar **0.0017%** difference
+  - In total **Extreme cold** average deaths is lower by around **22%** difference
+  - The cities **Fresno, CA** & **Miami, FL** have no extreme cold deaths
+  - **Colorado Springs** experiences a slight increase in average deaths during heat waves compared to normal conditions.
+  - **Houston** sees a significant increase in average deaths during extreme cold conditions compared to normal conditions.
+
+- **Conclusion for #5**:
+  - Region 2 (Cities - Houston, Miami, and Phoenix) has an average difference 
+    factor of **129%** increase in average deaths during extreme cold conditions 
+    compared to normal conditions.
+  - Region 5 (Cities - Indianapolis, Colorado Springs, and Boston) has an average
+    difference factor of **97%** decrease in average deaths during heat waves 
+    compared to normal conditions. 
+    
 ### Controlling for Flu season
+
+**Specific question #6:** Do each of the above trends hold when pneumonia deaths (flu seasons) are removed?
+
+
+```{r}
+# Group by month and calculate the total pneumonia deaths
+data_main %>%
+  group_by(Month) %>%
+  summarise(Total_Pneumonia_Deaths = sum(Pneumonia.and.Influenza.Deaths, na.rm = TRUE)) %>% 
+  ggplot(aes(x = factor(Month), y = Total_Pneumonia_Deaths)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  theme_minimal() +
+  labs(title = "Total Pneumonia Deaths by Month",
+       x = "Month",
+       y = "Total Pneumonia Deaths") +
+  scale_x_discrete(labels = month.abb)  # Use abbreviated month names```
+
+# Group by month and calculate the total deaths
+data_main %>%
+  group_by(Month) %>%
+  summarise(Total_Deaths = sum(All.Deaths, na.rm = TRUE)) %>% 
+  ggplot(aes(x = factor(Month), y = Total_Deaths)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  theme_minimal() +
+  labs(title = "Total Deaths by Month",
+       x = "Month",
+       y = "Total Deaths") +
+  scale_x_discrete(labels = month.abb)  # Use abbreviated month names```
+```
+
+```{r}
+# Summarize total deaths by age group
+age_groups <- c("X.1.year..all.cause.deaths.", "X1.24.years..all.cause.deaths.",
+                "X25.44.years", "X45.64.years..all.cause.deaths.", "X65..years..all.cause.deaths.")
+
+data_main %>% filter(!is.na(`All.Deaths`)) %>% group_by(City, Month) %>% pivot_longer(
+  cols = age_groups,
+  names_to = 'Age_Group',
+  values_to = 'deaths',
+) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
+   deaths_sd = sd(deaths),
+   deaths_mean = mean(deaths),
+   deathsZ = (deaths - deaths_mean) / deaths_mean,
+) %>% filter(!is.na(deaths) ) %>% group_by(Month, Age_Group) %>%
+  mutate(
+    deathsZ = mean(deathsZ)
+  ) %>% filter(!is.na(deathsZ) ) %>%  
+  ggplot(aes(x = factor(Month), y = deathsZ, fill = Age_Group )) + geom_bar(stat = 'identity', position = 'dodge') + labs(title = "Seasonal Mortality Anomaly by Age Group", y = "Deaths as % of mean", x = 'Month', fill = "Age Group") + scale_fill_discrete(labels = c("<1 year (all cause deaths)", "1-24 years (all cause deaths)",
+                "25-44 years", "45-64 years (all cause deaths)", "65+ years (all cause deaths)"))
+
+
+# Subtract Pneumonia.and.Influenza.Deaths from All.Deaths
+data_main_excluding_pneumonia <- data_main %>%
+  mutate(All.Deaths = All.Deaths - Pneumonia.and.Influenza.Deaths)
+
+data_main_excluding_pneumonia %>% filter(!is.na(`All.Deaths`)) %>% group_by(City, Month) %>% pivot_longer(
+  cols = age_groups,
+  names_to = 'Age_Group',
+  values_to = 'deaths',
+) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
+   deaths_sd = sd(deaths),
+   deaths_mean = mean(deaths),
+   deathsZ = (deaths - deaths_mean) / deaths_mean,
+) %>% filter(!is.na(deaths) ) %>% group_by(Month, Age_Group) %>%
+  mutate(
+    deathsZ = mean(deathsZ)
+  ) %>% filter(!is.na(deathsZ) ) %>%  
+  ggplot(aes(x = factor(Month), y = deathsZ, fill = Age_Group )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  labs(title = "Seasonal Mortality Anomaly by Age Group (Excluding Pneumonia and Influenza Deaths)",
+       y = "Deaths as % of mean", x = 'Month',
+       fill = "Age Group") + 
+  scale_fill_discrete(labels = c("<1 year (all cause deaths)",
+                                 "1-24 years (all cause deaths)",
+                                 "25-44 years", "45-64 years (all cause deaths)",
+                                 "65+ years (all cause deaths)"))
+```
+
+- **Key Findings**:
+  - The total number of deaths ranges from **400,000-350,000** deaths a month
+  - The total number of pneumonia & influenza deaths range from **30,000-16,000**
+  - Using the seasonal mortality by age group chart compared to the same chart 
+    excluding pneumonia & influenza deaths is little to no difference.
+
+- **Conclusion for #6**:
+  - The amount of pneumonia & influenza deaths varies between age groups but the
+    overall variation between the two charts is minimal and still shows that same
+    trends in the data as before.
 
 ## Conclusion
 
