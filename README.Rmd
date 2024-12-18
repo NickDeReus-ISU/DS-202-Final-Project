@@ -8,12 +8,10 @@ library(ggplot2)
 library(dplyr)
 library(readr)
 library(tidyverse)
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = F, messages = FALSE, results = "hide")
 ```
 
 Madhu Avula, Nick DeReus, Jacob Johnson, Brianna Norman
-
-# This document will eventually contain the final report of this project. For now it is a place for thoughts and structuring
 
 ## Introduction
 
@@ -262,13 +260,22 @@ wm_combined <- merge(mortality_small, TAVG_weekly)
 
 ### Final Data Shape
 
+### Normalizing Data
+
+There are many circumstances where we must normalize our data because each city in our data set has a different population and different base mortality levels. In order to make them directly comparable we typically find the mean death count for each city for the periods in question then we find changes in mortality as a % change from that mean per city in the periods being studied. In the resulting figures, the mean value appears as 0 and any changes as a percent anomaly from 0.
+
+It isn't a perfect model, but it allows us to demonstrate the relative impact of various factors on the mortality rates of each of our cities and compare them.
+
 ## Results
 
 ### Basic Observations of from the Dataset
+First we explore the general conditions present in our data set, the annual temperature over time as well as seasonal patterns.
 
 #### Average Annual Temperature Over Time
 
-We find that the locations in our dataset have seen a progressive increase in average temperatures over the time since the beginning of the time period in 1962. We can't use this to prove global warming necessarily because these locations are all likely subject to the Heat Island effect, but the experience of people living in these locations is one of increasing average temperature.
+We find that the locations in our data set have seen a progressive increase in average temperatures over the time since the beginning of the time period in 1962. We can't necessarily use this as evidence to support global warming because these locations are all likely subject to strong Heat Island effects, but the experience of people living in these locations is one of increasing average temperature.
+
+While we have data on temperature highs and lows, we focus on mean temperatures because it gives us a more complete look at conditions than either the high or low over the course of a week, which is the length of each of the recorded events in our mortality data set.
 
 ```{r}
 allData %>% filter(!is.na(`TAVG`)) %>% group_by(Year) %>% summarize(
@@ -277,7 +284,7 @@ allData %>% filter(!is.na(`TAVG`)) %>% group_by(Year) %>% summarize(
   ggplot(aes(x = Year, y = Avg, color = Year) ) + geom_line() + ggtitle('Annual Average Temperature') + scale_color_gradient(low = "pink", high = "darkred" ) + ylab("Average Temperature") + theme(legend.position = "none")
 ```
 
-When charted by region, we can see that this increase in average temperatures is felt across all climate regions, but is most obvious in Region 6, which is the coolest region.
+When charted by region, we can see that the increase in average temperatures is felt across all climate regions, but is most obvious in Region 6, which is the coolest region.
 
 ```{r}
 allData %>% filter(!is.na(`TAVG`)) %>% group_by(region, Year) %>% summarize(
@@ -288,6 +295,7 @@ allData %>% filter(!is.na(`TAVG`)) %>% group_by(region, Year) %>% summarize(
 
 
 #### Seasonality of Temperature
+Our data set as a whole saw strong seasonal temperature swings, from an average of about 37 degrees Fahrenheit in January to an average of 78 in July.
 
 ```{r}
 allData %>% filter(!is.na(`TAVG`)) %>% group_by(Month) %>% summarize(
@@ -295,6 +303,8 @@ allData %>% filter(!is.na(`TAVG`)) %>% group_by(Month) %>% summarize(
 ) %>%
   ggplot(aes(x = Month %>% factor(), y = Avg, fill = Avg)) + geom_bar(stat = 'identity') + ggtitle('Average Temperature by Month') + scale_fill_gradient(low = "pink", high = "darkred" ) + ylab("Average Temperature") + xlab("Month") + theme(legend.position = "none")
 ```
+
+When we explore seasons regionally, we find that region 2 is the warmest year round, but summer temperatures are remarkably similar in all 6 regions, sitting between 73 and 82 degrees in July while winters see a range from 60 in region 2 and 28 in region 6 in January.
 
 ```{r}
 allData %>% filter(!is.na(`TAVG`)) %>% group_by(region, Month) %>% summarize(
@@ -311,7 +321,7 @@ allData %>% filter(!is.na(`TAVG`)) %>% group_by(region) %>% ggplot(aes(x = TAVG,
 
 ### Seasonal trends in mortality rates
 
-After normalizing death counts across our regions we find that death rates across our sample set are significantly higher on avg during the winter season and lower in summer months.
+After normalizing death counts across our regions we find that death rates across our sample set are significantly higher on average during the winter season and lower in summer and fall months.
 
 ```{r}
 # Normalize Deaths
@@ -333,7 +343,7 @@ df2 %>% group_by(City, Month) %>%
              fill = deathsZ,
              ) 
          ) + 
-  geom_bar(stat = 'identity',) + ylab("% difference from mean deaths") + xlab("Month") + scale_fill_gradient(low = "pink", high = "darkred" ) + theme(legend.position = "none")
+  geom_bar(stat = 'identity',) + ylab("% difference from mean deaths") + xlab("Month") + scale_fill_gradient(low = "pink", high = "darkred" ) + theme(legend.position = "none") + ggtitle("Seasonal Effects on Mortality (Normalized)")
 ```
 
 
@@ -344,7 +354,7 @@ myStatesList <- c('FL', 'CA', 'KS', 'CO')
 myCitiesList <- c('Miami', 'Fresno', 'Wichita', 'Colorado Springs')
 ```
 
-When we break down the data regionally we can see that colder regions have more highly seasonal effects on mortality, but even very warm regions suffer higher mortality in the winter months.
+When we break down the data regionally we can see that colder regions have more highly seasonal effects on mortality, but even very warm regions still suffer higher mortality in the winter months.
 
 We hypothesize that there are behavioral factors behind the increased winter mortality, but we aren't able to explore that here. At the very least we can assume that weather cannot be the only, or even the most major, factor behind these findings.
 
@@ -380,7 +390,7 @@ df2 %>% group_by(region, City, Month) %>%
              fill = deathsZ,
              ) 
          ) + 
-  geom_bar(stat = 'identity',) + ylab("% difference from mean deaths") + xlab("Month") + scale_fill_gradient(low = "pink", high = "darkred" ) + facet_wrap(~region) + theme(legend.position = "none")
+  geom_bar(stat = 'identity',) + ylab("% difference from mean deaths") + xlab("Month") + scale_fill_gradient(low = "pink", high = "darkred" ) + facet_wrap(~region) + theme(legend.position = "none") + ggtitle("Regional Seasonal Effects on Mortality (Normalized)")
 ```
 
 ### Correlation between temperature and Mortality 
@@ -392,22 +402,23 @@ ourCitiesList <- c('Miami', 'Fresno', 'Wichita', 'Colorado Springs', 'Pheonix', 
 ourCitiesData <- allData %>%
   filter(State %in% ourStatesList) %>% filter(City %in% ourCitiesList)
 ```
-#### The most deaths occurred during times where the average minimum temperature was between 45 and 60, which is likely the minimum from the days with high maximum temperatures. It is expected that colder regions will see higher mortality counts in lower temperatures when observed outside of the other regions.
+The most deaths occurred during times where the average minimum temperature was between 45 and 60, which is likely the minimum from the days with high maximum temperatures. It is expected that colder regions will see higher mortality counts in lower temperatures when observed outside of the other regions.
 #### Plot of the mean of the minimum monthly temperature plotted against the total deaths occurring at those temperatures
 ```{R}
-ggplot(ourCitiesData, aes(x=TMIN_Mean, weight=All.Deaths)) + geom_histogram(bins=15)
+ggplot(ourCitiesData, aes(x=TMIN_Mean, weight=All.Deaths)) + geom_histogram(bins = 15, fill = 'darkred', color = 'black') + ggtitle('Deaths by Min Temperature Histogram') + ylab("Count") + xlab("Average Temperature (F)") + theme(legend.position = "none") 
+
 ```
 Region 2 sees the highest death counts at maximum temperatures near 90, with death counts sharply increasing as the max temperature approaches that value. This region's mortality rates do not seem as affected by temperatures below 35, likely due to a generally higher climate and not seeing temperatures that low.
 Region 6 confirms the earlier held suspicion of a colder climate holding a higher mortality rate at lower temperatures than that of higher climates. This region has two mortality rate spikes: One where the max temperature approaches 75, and another where it is close to 30. However, the mortality rate seems to be fairly consistent at minimum temperatures between 35 and 60 in region 6
 
 
 ```{R}
-ggplot(ourCitiesData, aes(x=TMAX_Mean, weight=All.Deaths)) + geom_histogram(bins=15) + facet_wrap(~region)
+ggplot(ourCitiesData, aes(x=TAVG, weight=All.Deaths)) + geom_histogram(bins = 15, fill = 'darkred', color = 'black') + ggtitle('Deaths by Average Temperature Histogram') + ylab("Count") + xlab("Average Temperature (F)") + theme(legend.position = "none")  + facet_wrap(~region)
 ```
   Plot of the mean of the maximum monthly temperature plotted against the total deaths occurring at those temperatures, grouped by Region
 
 ```{R}
-ggplot(ourCitiesData, aes(x=TMIN_Mean, weight=All.Deaths)) + geom_histogram(bins=15) + facet_wrap(~region)
+ggplot(ourCitiesData, aes(x=TMAX_Mean, weight=All.Deaths)) + geom_histogram(bins = 15, fill = 'darkred', color = 'black') + ggtitle('Deaths by Max Temperature Histogram') + ylab("Count") + xlab("Average Temperature (F)") + theme(legend.position = "none")  + facet_wrap(~region)
 ```
   Plot of the mean of the minimum monthly temperature plotted against the total deaths occurring at those temperatures
   
@@ -432,23 +443,18 @@ percent_deaths <- total_deaths / sum(total_deaths) * 100
 
 # Plot the data
 barplot(percent_deaths, names.arg = c("<1 year", "1-24 years", "25-44 years", "45-64 years", "65+ years"),
-        main = "Mortality Distribution by Age Group", ylab = "Percentage of Total Deaths", col = "darkred")
+        main = "Mortality Distribution by Age Group", ylab = "Percentage of Total Deaths")
 ```
 
 ### Effects of Seasonality by Age Group
 
-### Key Findings
-- **WT01 (Fog, ice fog, or freezing fog)** and **WT16 (Rain, including freezing rain)** have the highest associated mortality, exceeding 1.4 × 10^8 deaths each.
-- Other weather events with notable impacts include:
-  - **WT08 (Smoke or haze)**
-  - **WT03 (Thunder)**
-  - **WT13 (Mist)**
-  - **WT18 (Snow, snow pellets, or ice crystals)**
-- Events like **WT10 (Tornado, waterspout, or funnel cloud)** and **WT22 (Ice fog)** have minimal impacts on mortality.
+For this section we normalize the data by breaking it up by city and age group, finding the mean mortality rate of each age group in each city and then finding the average deviation from that mean as a proportion. In this way we can demonstrate the differences in strength of seasonal signals on the mortality in each age group.
 
-### Conclusion
-- **Fog and rain-related events** pose the greatest risks to mortality, likely due to reduced visibility, accidents, or secondary health impacts.
-- **Smoke/haze and snow events** also contribute significantly, highlighting their environmental and safety hazards.
+We show that older age groups are the more highly impacted by seasonal signals, seeing greatly increased mortality rates in the winter compared to the summer months. This increase in mortality could be due to cold weather stressing the body, accidents related to winter weather, seasonal respiratory illness, reduced sunlight and increased sedentary and indoor living, or other changes in seasonal behavior. Later on, we explore the effects of extreme heat and cold on mortality.
+
+Interestingly, young people between the ages of 1 and 24 see the opposite trend as all older age groups. Their greatest mortality rates occur during the three summer months, which correlates well with school scheduling. We hypothesize that this increase is due mostly due to accidents while student age people are out of school and unsupervised, but that is beyond the scope of this paper.
+
+We would also like to point out that in the regional breakdown, this increase in mortality for young people is much weaker in region 2 than the others.
 
 ```{r}
 # Summarize total deaths by age group
@@ -460,38 +466,54 @@ allData %>% filter(!is.na(`All.Deaths`)) %>% group_by(City, Month) %>% pivot_lon
   names_to = 'Age_Group',
   values_to = 'deaths',
 ) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
-   deaths_sd = sd(deaths),
-   deaths_mean = mean(deaths),
+   deaths_sd = sd(deaths, na.rm = TRUE),
+   deaths_mean = mean(deaths, na.rm = TRUE),
    deathsZ = (deaths - deaths_mean) / deaths_mean,
-) %>% filter(!is.na(deaths) ) %>% group_by(Month, Age_Group) %>%
+) %>% filter(!is.na(deaths)) %>% group_by(Month, Age_Group) %>%
   mutate(
-    deathsZ = mean(deathsZ)
+    deathsZ = mean(deathsZ, na.rm = TRUE)
   ) %>% filter(!is.na(deathsZ) ) %>%  
-  ggplot(aes(x = factor(Month), y = deathsZ, fill = Age_Group )) + geom_bar(stat = 'identity', position = 'dodge') + labs(title = "Seasonal Mortality Anomaly by Age Group", y = "Deaths as % of mean", x = 'Month', fill = "Age Group") + scale_fill_discrete(labels = c("<1 year (all cause deaths)", "1-24 years (all cause deaths)",
+  ggplot(aes(x = Month, y = deathsZ, color = Age_Group, )) + geom_line() + geom_point() + labs(title = "Seasonal Mortality Anomaly by Age Group", y = "Deaths as % of mean", x = 'Month', color = "Age Group") + scale_x_continuous(breaks = seq(1, 12, by = 1)) + scale_color_discrete(labels = c("<1 year (all cause deaths)", "1-24 years (all cause deaths)",
                 "25-44 years", "45-64 years (all cause deaths)", "65+ years (all cause deaths)"))
+```
+```{r}
+# Summarize total deaths by age group
+age_groups <- c("X.1.year..all.cause.deaths.", "X1.24.years..all.cause.deaths.",
+                "X25.44.years", "X45.64.years..all.cause.deaths.", "X65..years..all.cause.deaths.")
+
+allData %>% filter(!is.na(`All.Deaths`)) %>% group_by(City, Month) %>% pivot_longer(
+  cols = age_groups,
+  names_to = 'Age_Group',
+  values_to = 'deaths',
+) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
+   deaths_sd = sd(deaths, na.rm = TRUE),
+   deaths_mean = mean(deaths, na.rm = TRUE),
+   deathsZ = (deaths - deaths_mean) / deaths_mean,
+) %>% filter(!is.na(deaths)) %>% group_by(region, Month, Age_Group) %>%
+  mutate(
+    deathsZ = mean(deathsZ, na.rm = TRUE)
+  ) %>% filter(!is.na(deathsZ) ) %>%  
+  ggplot(aes(x = Month, y = deathsZ, color = Age_Group, )) + geom_line() + geom_point() + labs(title = "Seasonal Mortality Anomaly by Age Group", y = "Deaths as % of mean", x = 'Month', color = "Age Group") + scale_x_continuous(breaks = seq(1, 12, by = 1)) + scale_color_discrete(labels = c("<1 year (all cause deaths)", "1-24 years (all cause deaths)",
+                "25-44 years", "45-64 years (all cause deaths)", "65+ years (all cause deaths)")) + facet_wrap('region') 
 ```
 
 
-### The effect of various weather events on mortality
-#### Regional Effects
+### Effects of Extreme Weather Events
 
-### Relative Vulnerability to Weather Events by Region
-
-**Specific question #5:** Define which regions are most affected by certain types of weather? (Which most vulnerable to heat waves and extreme cold)
 
 ```{r}
 # Define thresholds for heat waves and extreme cold
-heat_wave_threshold <- 90  # Threshold for heat wave (in degrees Fahrenheit)
-extreme_cold_threshold <- 15  # Threshold for extreme cold (in degrees Fahrenheit)
+heat_wave_threshold <- 85  # Threshold for heat wave (in degrees Fahrenheit)
+extreme_cold_threshold <- 20  # Threshold for extreme cold (in degrees Fahrenheit)
 
 # Filter data for heat waves, extreme cold, normal conditions(temperatures between the thresholds)
-heat_wave_data <- data_main %>%
+heat_wave_data <- allData %>%
   filter(TMAX_Max >= heat_wave_threshold)
 
-extreme_cold_data <- data_main %>%
+extreme_cold_data <- allData %>%
   filter(TMIN_Min <= extreme_cold_threshold)
 
-normal_data <- data_main %>%
+normal_data <- allData %>%
   filter(TMAX_Max < heat_wave_threshold & TMIN_Min > extreme_cold_threshold)
 
 
@@ -512,8 +534,6 @@ extreme_cold_deaths <- extreme_cold_data %>%
   arrange(desc(total_deaths))
 ```
 
-
-**Deaths during Heat Wave/Extreme Cold/General Conditions**
 ```{r}
 # custom colors for each region
 custom_colors <- c(
@@ -527,7 +547,9 @@ custom_colors <- c(
 
 
 # Summarize data by week and region (general)
-data_summary <- data_main %>%
+data_summary <- allData %>%
+  group_by(region, City, Week) %>%
+  summarise(All.Deaths = sum(All.Deaths, na.rm = TRUE)) %>%
   group_by(region, Week) %>%
   summarise(All.Deaths = sum(All.Deaths, na.rm = TRUE))
 
@@ -543,7 +565,7 @@ ggplot(data_summary, aes(x = Week, y = All.Deaths, color = as.factor(region), gr
 
 #--------------------------------------------------
   
-# Summarize data by week and region (heat wave)
+# Summarize data by week and region (extreme cold)
 data_summary_heat_wave <- heat_wave_data %>%
   group_by(region, Week) %>%
   summarise(All.Deaths = sum(All.Deaths, na.rm = TRUE))
@@ -553,7 +575,7 @@ ggplot(data_summary_heat_wave, aes(x = Week, y = All.Deaths, color = as.factor(r
   geom_line(size = 1) +
   scale_color_manual(values = custom_colors) +
   theme_minimal() +
-  labs(title = "All Deaths by Week and Region (During Heat Waves)",
+  labs(title = "All Deaths by Week and Region (During extreme cold)",
        x = "Week",
        y = "All.Deaths",
        color = "Region")
@@ -576,190 +598,138 @@ ggplot(data_summary_extreme_cold, aes(x = Week, y = All.Deaths, color = as.facto
        color = "Region")
 ```
 
-**Difference between mortality during heat waves/freezes compared to normal**
+#### Heat Waves and Extreme Cold Events
+For this section we compare the impact of individual events against the average (expected) morality for the time of the event. To do this we group all events by city and week, find the mean mortality across the years of the data set for each week. Then we define heat wave and extreme cold conditions, weeks with an Average Temperature at or above 85 degrees and weeks with an average temperature at or below 20 degrees and tag such events. We then find the deviation from the mean as a proportion for each such event by city. The figures below are the means of these deviations.
+
+We show that despite increased general mortality in the winter and reduced general mortality in the summer, that Heat Waves are strongly associated with an increase from mean mortality while extreme cold is associated with a decrease.
 ```{r}
-# Calculate average mortality during normal conditions
-normal_mortality <- normal_data %>%
-  summarise(avg_deaths = mean(All.Deaths, na.rm = TRUE))
-
-# Calculate average mortality during heat waves
-heat_wave_mortality <- heat_wave_data %>%
-  summarise(avg_deaths = mean(All.Deaths, na.rm = TRUE))
-
-# Calculate average mortality during extreme cold
-extreme_cold_mortality <- extreme_cold_data %>%
-  summarise(avg_deaths = mean(All.Deaths, na.rm = TRUE))
-
-# Calculate differences in mortality rates
-mortality_diff <- data.frame(
-  Condition = c("Normal", "Heat Wave", "Extreme Cold"),
-  Avg_Deaths = c(normal_mortality$avg_deaths, heat_wave_mortality$avg_deaths, extreme_cold_mortality$avg_deaths)
-)
-
-mortality_diff <- mortality_diff %>%
-  mutate(Difference = Avg_Deaths / normal_mortality$avg_deaths)
-
-mortality_diff
-
-# Visualizing the differences in mortality rates
-ggplot(mortality_diff, aes(x = Condition, y = Difference, fill = Condition)) +
-  geom_bar(stat = "identity") +
-  theme_minimal() +
-  labs(title = "Difference in Mortality Rates During Extreme Weather Conditions",
-       x = "Condition",
-       y = "Difference in Average Deaths",
-       fill = "Condition")
+# Mark entries by normal or extreme weather condition
+allData %>% filter(!is.na(TAVG)) %>% group_by(City, Year, Week) %>% mutate(
+  TempCondition = if(TAVG >= 85) {"Heat+"} else if (TAVG <= 20) {"Cold+"} else {'normal'},
+) %>% 
+  
+  # Find the average (expected) mortality for each week number in each city.
+  group_by(City, Week) %>% filter(!is.na(`All.Deaths`)) %>% 
+  mutate(
+    mean_deaths = mean(`All.Deaths`, na.rm = TRUE),
+) %>% 
+  # Find the average percent difference in mortality for extreme conditions compared to expected mortality.
+  group_by(City, Year, Week) %>% 
+  mutate(
+    normalized = (`All.Deaths` - mean_deaths) / mean_deaths
+    ) %>% 
+  filter(!is.na(normalized)) %>% group_by(TempCondition) %>% reframe(
+  normalized = mean(normalized, na.rm = TRUE)
+  ) %>% ggplot(aes(x = TempCondition, y = normalized, fill = TempCondition)) + geom_bar(stat = 'identity', position = 'dodge') + scale_fill_manual(values = c("Cold+" = 'skyblue', "Heat+" = 'orangered', 'normal' = 'grey')) + theme(legend.position = "none")
 ```
 
 
 ```{r}
-# Calculate average mortality during normal conditions, grouped by city
-normal_mortality <- normal_data %>%
-  group_by(City) %>%
-  summarise(avg_deaths_normal = mean(All.Deaths, na.rm = TRUE))
-
-# Calculate average mortality during heat waves, grouped by city
-heat_wave_mortality <- heat_wave_data %>%
-  group_by(City) %>%
-  summarise(avg_deaths_heat_wave = mean(All.Deaths, na.rm = TRUE))
-
-# Calculate average mortality during extreme cold, grouped by city
-extreme_cold_mortality <- extreme_cold_data %>%
-  group_by(City) %>%
-  summarise(avg_deaths_extreme_cold = mean(All.Deaths, na.rm = TRUE))
-
-# Combining the Mortality Rates data into one data frame
-mortality_diff <- normal_mortality %>%
-  left_join(heat_wave_mortality, by = "City") %>%
-  left_join(extreme_cold_mortality, by = "City") %>%
+# Mark entries by normal or extreme weather condition
+allData %>% filter(!is.na(TAVG)) %>% group_by(City, Year, Week) %>% mutate(
+  TempCondition = if(TAVG >= 85) {"Heat+"} else if (TAVG <= 20) {"Cold+"} else {'normal'},
+) %>% 
+  
+  # Find the average (expected) mortality for each week number in each city.
+  group_by(City, Week) %>% 
   mutate(
-    heat_wave_diff = (avg_deaths_heat_wave / avg_deaths_normal),
-    extreme_cold_diff = (avg_deaths_extreme_cold / avg_deaths_normal))
-
-mortality_diff
-
-# Visualizing the Results + Reshape the data for plotting
-mortality_diff_long <- mortality_diff %>%
-  pivot_longer(cols = c(heat_wave_diff, extreme_cold_diff), names_to = "Condition", values_to = "Difference")
-
-# Plot the differences in mortality rates by city
-ggplot(mortality_diff_long, aes(x = City, y = Difference, fill = Condition)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  theme_minimal() +
-  labs(title = "Percentage difference in Mortality Rates During Extreme Weather 
-       Conditions by City",
-       x = "City",
-       y = "Percentage difference in Average Deaths",
-       fill = "Condition") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    mean_deaths = mean(`All.Deaths`, na.rm = TRUE),
+) %>% 
+  # Find the average percent difference in mortality for extreme conditions compared to expected mortality.
+  group_by(City, Year, Week) %>% 
+  mutate(
+    normalized = (`All.Deaths` - mean_deaths) / mean_deaths
+    ) %>% 
+  filter(!is.na(normalized)) %>% group_by(region, TempCondition) %>% reframe(
+  normalized = mean(normalized, na.rm = TRUE)
+  ) %>% ggplot(aes(x = TempCondition, y = normalized, fill = TempCondition)) + geom_bar(stat = 'identity', position = 'dodge') + scale_fill_manual(values = c("Cold+" = 'skyblue', "Heat+" = 'orangered', 'normal' = 'grey')) + facet_wrap('region') + theme(legend.position = "none")
 ```
 
 - **Key Findings**:
-  - In total **Normal** and **Heat wave** average deaths are very similar **0.0017%** difference
-  - In total **Extreme cold** average deaths is lower by around **22%** difference
-  - The cities **Fresno, CA** & **Miami, FL** have no extreme cold deaths
-  - **Colorado Springs** experiences a slight increase in average deaths during heat waves compared to normal conditions.
-  - **Houston** sees a significant increase in average deaths during extreme cold conditions compared to normal conditions.
-
-- **Conclusion for #5**:
-  - Region 2 (Cities - Houston, Miami, and Phoenix) has an average difference 
-    factor of **129%** increase in average deaths during extreme cold conditions 
-    compared to normal conditions.
-  - Region 5 (Cities - Indianapolis, Colorado Springs, and Boston) has an average
-    difference factor of **97%** decrease in average deaths during heat waves 
-    compared to normal conditions. 
+  - **Heat Waves** are associated with a 3.45% increase in mortality average
+  - In total **Extreme Cold** average deaths is lower by around **22%** difference
+  - The cities in **Region 2** have no extreme cold events
+  - The cities in **Region 6** have no extreme heat events 
     
-### Controlling for Flu season
-
-**Specific question #6:** Do each of the above trends hold when pneumonia deaths (flu seasons) are removed?
+### The Impact of Flu Season
 
 
 ```{r}
 # Group by month and calculate the total pneumonia deaths
-data_main %>%
+allData %>% filter(!(is.na(All.Deaths) & is.na(Pneumonia.and.Influenza.Deaths))) %>%
+  group_by(region, City, Month) %>%
+  summarise(Total_Pneumonia_Deaths = Pneumonia.and.Influenza.Deaths/All.Deaths ) %>% 
   group_by(Month) %>%
-  summarise(Total_Pneumonia_Deaths = sum(Pneumonia.and.Influenza.Deaths, na.rm = TRUE)) %>% 
-  ggplot(aes(x = factor(Month), y = Total_Pneumonia_Deaths)) +
+  summarise(
+    percent = mean(Total_Pneumonia_Deaths, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(x = factor(Month), y = percent)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   theme_minimal() +
-  labs(title = "Total Pneumonia Deaths by Month",
+  labs(title = "Pneumonia Deaths as a Proportion of All Deaths (normalized)",
        x = "Month",
-       y = "Total Pneumonia Deaths") +
-  scale_x_discrete(labels = month.abb)  # Use abbreviated month names```
+       y = "Proportion of all Deaths")
 
-# Group by month and calculate the total deaths
-data_main %>%
-  group_by(Month) %>%
-  summarise(Total_Deaths = sum(All.Deaths, na.rm = TRUE)) %>% 
-  ggplot(aes(x = factor(Month), y = Total_Deaths)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
-  theme_minimal() +
-  labs(title = "Total Deaths by Month",
-       x = "Month",
-       y = "Total Deaths") +
-  scale_x_discrete(labels = month.abb)  # Use abbreviated month names```
 ```
 
 ```{r}
-# Summarize total deaths by age group
-age_groups <- c("X.1.year..all.cause.deaths.", "X1.24.years..all.cause.deaths.",
-                "X25.44.years", "X45.64.years..all.cause.deaths.", "X65..years..all.cause.deaths.")
+# Group by month and calculate the total pneumonia deaths
+allData %>% filter(!(is.na(All.Deaths) & is.na(Pneumonia.and.Influenza.Deaths))) %>%
+  group_by(region, City, Month) %>%
+  summarise(Total_Pneumonia_Deaths = Pneumonia.and.Influenza.Deaths/All.Deaths ) %>% 
+  group_by(region, Month) %>%
+  summarise(
+    percent = mean(Total_Pneumonia_Deaths, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(x = factor(Month), y = percent)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  theme_minimal() +
+  labs(title = "Regional Pneumonia Deaths as a Proportion of All Deaths (normalized)",
+       x = "Month",
+       y = "Proportion of All Deaths") + facet_wrap('region') 
+```
+```{r}
+# Normalize Deaths
+dfStats <- allData %>% group_by(City) %>% filter(!is.na(All.Deaths)) %>% summarize(
+  All_Deaths_mm = mean(All.Deaths, na.rm = TRUE),
+  All_Deaths_msd = mean(All.Deaths - Pneumonia.and.Influenza.Deaths, na.rm = TRUE),
+)
 
-data_main %>% filter(!is.na(`All.Deaths`)) %>% group_by(City, Month) %>% pivot_longer(
-  cols = age_groups,
-  names_to = 'Age_Group',
-  values_to = 'deaths',
-) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
-   deaths_sd = sd(deaths),
-   deaths_mean = mean(deaths),
-   deathsZ = (deaths - deaths_mean) / deaths_mean,
-) %>% filter(!is.na(deaths) ) %>% group_by(Month, Age_Group) %>%
-  mutate(
-    deathsZ = mean(deathsZ)
-  ) %>% filter(!is.na(deathsZ) ) %>%  
-  ggplot(aes(x = factor(Month), y = deathsZ, fill = Age_Group )) + geom_bar(stat = 'identity', position = 'dodge') + labs(title = "Seasonal Mortality Anomaly by Age Group", y = "Deaths as % of mean", x = 'Month', fill = "Age Group") + scale_fill_discrete(labels = c("<1 year (all cause deaths)", "1-24 years (all cause deaths)",
-                "25-44 years", "45-64 years (all cause deaths)", "65+ years (all cause deaths)"))
+df2 <- merge(allData, dfStats)
 
+df2 <- df2 %>% group_by(City, Month) %>% 
+  reframe(
+    deathsZ = (`All.Deaths` - All_Deaths_mm) / All_Deaths_mm,
+    deathsNoF = ( (`All.Deaths` - Pneumonia.and.Influenza.Deaths) - All_Deaths_msd) / All_Deaths_msd
+  ) %>% filter(!is.na(deathsZ)) %>% group_by(Month) %>% reframe(
+    deathsZ = mean(deathsZ, na.rm = TRUE),
+    deathsNoF = mean(deathsNoF, na.rm = TRUE)
+  ) %>% pivot_longer(cols = c("deathsZ", "deathsNoF"), names_to = "type", values_to = "Anomaly")
 
-# Subtract Pneumonia.and.Influenza.Deaths from All.Deaths
-data_main_excluding_pneumonia <- data_main %>%
-  mutate(All.Deaths = All.Deaths - Pneumonia.and.Influenza.Deaths)
+df2
 
-data_main_excluding_pneumonia %>% filter(!is.na(`All.Deaths`)) %>% group_by(City, Month) %>% pivot_longer(
-  cols = age_groups,
-  names_to = 'Age_Group',
-  values_to = 'deaths',
-) %>% filter(!is.na(deaths) ) %>% group_by(City, Age_Group) %>% mutate(
-   deaths_sd = sd(deaths),
-   deaths_mean = mean(deaths),
-   deathsZ = (deaths - deaths_mean) / deaths_mean,
-) %>% filter(!is.na(deaths) ) %>% group_by(Month, Age_Group) %>%
-  mutate(
-    deathsZ = mean(deathsZ)
-  ) %>% filter(!is.na(deathsZ) ) %>%  
-  ggplot(aes(x = factor(Month), y = deathsZ, fill = Age_Group )) + 
-  geom_bar(stat = 'identity', position = 'dodge') + 
-  labs(title = "Seasonal Mortality Anomaly by Age Group (Excluding Pneumonia and Influenza Deaths)",
-       y = "Deaths as % of mean", x = 'Month',
-       fill = "Age Group") + 
-  scale_fill_discrete(labels = c("<1 year (all cause deaths)",
-                                 "1-24 years (all cause deaths)",
-                                 "25-44 years", "45-64 years (all cause deaths)",
-                                 "65+ years (all cause deaths)"))
+  df2 %>% ggplot(aes(x = as.factor(Month), y = Anomaly, fill = type)) + 
+  geom_bar( stat = 'identity', position = 'dodge') +
+
+    ylab("% difference from mean deaths") + xlab("Month") + ggtitle("Controlling for Flu Season") + scale_fill_discrete(labels = c("Controlled for Flu", "Base Mortality"))
 ```
 
 - **Key Findings**:
   - The total number of deaths ranges from **400,000-350,000** deaths a month
   - The total number of pneumonia & influenza deaths range from **30,000-16,000**
-  - Using the seasonal mortality by age group chart compared to the same chart 
-    excluding pneumonia & influenza deaths is little to no difference.
+  - Controling for flu season doesn't significantly alter the seasonality of mortality. 
 
 - **Conclusion for #6**:
   - The amount of pneumonia & influenza deaths varies between age groups but the
-    overall variation between the two charts is minimal and still shows that same
-    trends in the data as before.
+    overall variation between the two charts is minimal and still shows similar seasonal trends.
 
-## Conclusion
+## Conclusions
+
+Our findings support the idea that weather and seasons have a significant impact on general mortality, with mortality rates trending higher in the winter and lower in the summer for most age groups and correlating well with temperature. However, we found that the warmest areas in our data set experienced similar seasonal trends as colder regions so much of the seasonal signal may be strictly due to changes in human activities throughout the year. It should be stated that many of these changes in activity are or were themselves informed by the weather.
+
+When investigating extreme weather events, we found that heat waves were associated with higher than average mortality while extreme cold was associated with lower than average mortality, which suggests that while winter weather is generally stressful for the population, more extreme cold by itself does not currently contribute to increasing mortality, possibly because people tend to take reasonable steps to protect themselves during cold events. On the other hand, while summer heat is associated with lower levels of general mortality, extreme heat was associated with above average mortality.
+
+We also found that pneumonia and respiratory illness does not have a large impact on the seasonality of deaths, despite making up a notable proportion of all deaths. 
 
 ## References
 "Deaths in 122 US Cities, 1962-2016", CDC, <https://data.cdc.gov/dataset/Deaths-in-122-U-S-cities-1962-2016-122-Cities-Mort/mr8w-325u/about_data>

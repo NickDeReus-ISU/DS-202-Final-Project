@@ -3,8 +3,6 @@ Analysis of the Effects of Weather on Mortality in Metropolitan Areas
 
 Madhu Avula, Nick DeReus, Jacob Johnson, Brianna Norman
 
-# This document will eventually contain the final report of this project. For now it is a place for thoughts and structuring
-
 ## Introduction
 
 The weather has outstanding impacts on the daily lives of individuals.
@@ -253,22 +251,44 @@ Finally combine weather and mortality data
 
 ### Final Data Shape
 
+### Normalizing Data
+
+There are many circumstances where we must normalize our data because
+each city in our data set has a different population and different base
+mortality levels. In order to make them directly comparable we typically
+find the mean death count for each city for the periods in question then
+we find changes in mortality as a % change from that mean per city in
+the periods being studied. In the resulting figures, the mean value
+appears as 0 and any changes as a percent anomaly from 0.
+
+It isn’t a perfect model, but it allows us to demonstrate the relative
+impact of various factors on the mortality rates of each of our cities
+and compare them.
+
 ## Results
 
 ### Basic Observations of from the Dataset
 
+First we explore the general conditions present in our data set, the
+annual temperature over time as well as seasonal patterns.
+
 #### Average Annual Temperature Over Time
 
-We find that the locations in our dataset have seen a progressive
+We find that the locations in our data set have seen a progressive
 increase in average temperatures over the time since the beginning of
-the time period in 1962. We can’t use this to prove global warming
-necessarily because these locations are all likely subject to the Heat
-Island effect, but the experience of people living in these locations is
-one of increasing average temperature.
+the time period in 1962. We can’t necessarily use this as evidence to
+support global warming because these locations are all likely subject to
+strong Heat Island effects, but the experience of people living in these
+locations is one of increasing average temperature.
+
+While we have data on temperature highs and lows, we focus on mean
+temperatures because it gives us a more complete look at conditions than
+either the high or low over the course of a week, which is the length of
+each of the recorded events in our mortality data set.
 
 ![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
-When charted by region, we can see that this increase in average
+When charted by region, we can see that the increase in average
 temperatures is felt across all climate regions, but is most obvious in
 Region 6, which is the coolest region.
 
@@ -279,7 +299,16 @@ Region 6, which is the coolest region.
 
 #### Seasonality of Temperature
 
+Our data set as a whole saw strong seasonal temperature swings, from an
+average of about 37 degrees Fahrenheit in January to an average of 78 in
+July.
+
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+When we explore seasons regionally, we find that region 2 is the warmest
+year round, but summer temperatures are remarkably similar in all 6
+regions, sitting between 73 and 82 degrees in July while winters see a
+range from 60 in region 2 and 28 in region 6 in January.
 
     ## `summarise()` has grouped output by 'region'. You can override using the
     ## `.groups` argument.
@@ -293,14 +322,14 @@ Region 6, which is the coolest region.
 ### Seasonal trends in mortality rates
 
 After normalizing death counts across our regions we find that death
-rates across our sample set are significantly higher on avg during the
-winter season and lower in summer months.
+rates across our sample set are significantly higher on average during
+the winter season and lower in summer and fall months.
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 When we break down the data regionally we can see that colder regions
 have more highly seasonal effects on mortality, but even very warm
-regions suffer higher mortality in the winter months.
+regions still suffer higher mortality in the winter months.
 
 We hypothesize that there are behavioral factors behind the increased
 winter mortality, but we aren’t able to explore that here. At the very
@@ -311,9 +340,13 @@ major, factor behind these findings.
 
 ### Correlation between temperature and Mortality
 
-#### The most deaths occurred during times where the average minimum temperature was between 45 and 60, which is likely the minimum from the days with high maximum temperatures. It is expected that colder regions will see higher mortality counts in lower temperatures when observed outside of the other regions.
-
-#### Plot of the mean of the minimum monthly temperature plotted against the total deaths occurring at those temperatures
+The most deaths occurred during times where the average minimum
+temperature was between 45 and 60, which is likely the minimum from the
+days with high maximum temperatures. It is expected that colder regions
+will see higher mortality counts in lower temperatures when observed
+outside of the other regions. \#### Plot of the mean of the minimum
+monthly temperature plotted against the total deaths occurring at those
+temperatures
 
     ## Warning: Removed 145 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
@@ -330,14 +363,14 @@ rate spikes: One where the max temperature approaches 75, and another
 where it is close to 30. However, the mortality rate seems to be fairly
 consistent at minimum temperatures between 35 and 60 in region 6
 
-    ## Warning: Removed 142 rows containing non-finite outside the scale range
+    ## Warning: Removed 138 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
 ![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- --> Plot of the
 mean of the maximum monthly temperature plotted against the total deaths
 occurring at those temperatures, grouped by Region
 
-    ## Warning: Removed 145 rows containing non-finite outside the scale range
+    ## Warning: Removed 142 rows containing non-finite outside the scale range
     ## (`stat_bin()`).
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- --> Plot of the
@@ -363,28 +396,30 @@ occurring at those temperatures
 
 ### Effects of Seasonality by Age Group
 
-### Key Findings
+For this section we normalize the data by breaking it up by city and age
+group, finding the mean mortality rate of each age group in each city
+and then finding the average deviation from that mean as a proportion.
+In this way we can demonstrate the differences in strength of seasonal
+signals on the mortality in each age group.
 
-- **WT01 (Fog, ice fog, or freezing fog)** and **WT16 (Rain, including
-  freezing rain)** have the highest associated mortality, exceeding 1.4
-  × 10^8 deaths each.
-- Other weather events with notable impacts include:
-  - **WT08 (Smoke or haze)**
-  - **WT03 (Thunder)**
-  - **WT13 (Mist)**
-  - **WT18 (Snow, snow pellets, or ice crystals)**
-- Events like **WT10 (Tornado, waterspout, or funnel cloud)** and **WT22
-  (Ice fog)** have minimal impacts on mortality.
+We show that older age groups are the more highly impacted by seasonal
+signals, seeing greatly increased mortality rates in the winter compared
+to the summer months. This increase in mortality could be due to cold
+weather stressing the body, accidents related to winter weather,
+seasonal respiratory illness, reduced sunlight and increased sedentary
+and indoor living, or other changes in seasonal behavior. Later on, we
+explore the effects of extreme heat and cold on mortality.
 
-### Conclusion
+Interestingly, young people between the ages of 1 and 24 see the
+opposite trend as all older age groups. Their greatest mortality rates
+occur during the three summer months, which correlates well with school
+scheduling. We hypothesize that this increase is due mostly due to
+accidents while student age people are out of school and unsupervised,
+but that is beyond the scope of this paper.
 
-- **Fog and rain-related events** pose the greatest risks to mortality,
-  likely due to reduced visibility, accidents, or secondary health
-  impacts.
-- **Smoke/haze and snow events** also contribute significantly,
-  highlighting their environmental and safety hazards.
-
-<!-- -->
+We would also like to point out that in the regional breakdown, this
+increase in mortality for young people is much weaker in region 2 than
+the others.
 
     ## Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
     ## ℹ Please use `all_of()` or `any_of()` instead.
@@ -400,16 +435,129 @@ occurring at those temperatures
     ## generated.
 
 ![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
-### The effect of various weather events on mortality
+### Effects of Extreme Weather Events
 
-#### Regional Effects
+    ## `summarise()` has grouped output by 'region', 'City'. You can override using
+    ## the `.groups` argument.
+    ## `summarise()` has grouped output by 'region'. You can override using the
+    ## `.groups` argument.
 
-### Relative Vulnerability to Weather Events by Region
+    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+    ## ℹ Please use `linewidth` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
 
-### Controlling for Flu season
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
-## Conclusion
+    ## `summarise()` has grouped output by 'region'. You can override using the
+    ## `.groups` argument.
+
+![](README_files/figure-gfm/unnamed-chunk-18-2.png)<!-- -->
+
+    ## `summarise()` has grouped output by 'region'. You can override using the
+    ## `.groups` argument.
+
+![](README_files/figure-gfm/unnamed-chunk-18-3.png)<!-- -->
+
+#### Heat Waves and Extreme Cold Events
+
+For this section we compare the impact of individual events against the
+average (expected) morality for the time of the event. To do this we
+group all events by city and week, find the mean mortality across the
+years of the data set for each week. Then we define heat wave and
+extreme cold conditions, weeks with an Average Temperature at or above
+85 degrees and weeks with an average temperature at or below 20 degrees
+and tag such events. We then find the deviation from the mean as a
+proportion for each such event by city. The figures below are the means
+of these deviations.
+
+We show that despite increased general mortality in the winter and
+reduced general mortality in the summer, that Heat Waves are strongly
+associated with an increase from mean mortality while extreme cold is
+associated with a decrease.
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+- **Key Findings**:
+  - **Heat Waves** are associated with a 3.45% increase in mortality
+    average
+  - In total **Extreme Cold** average deaths is lower by around **22%**
+    difference
+  - The cities in **Region 2** have no extreme cold events
+  - The cities in **Region 6** have no extreme heat events
+
+### The Impact of Flu Season
+
+    ## Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
+    ## dplyr 1.1.0.
+    ## ℹ Please use `reframe()` instead.
+    ## ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+    ##   always returns an ungrouped data frame and adjust accordingly.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
+    ## `summarise()` has grouped output by 'region', 'City', 'Month'. You can override
+    ## using the `.groups` argument.
+
+![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+    ## Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
+    ## dplyr 1.1.0.
+    ## ℹ Please use `reframe()` instead.
+    ## ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+    ##   always returns an ungrouped data frame and adjust accordingly.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
+    ## `summarise()` has grouped output by 'region', 'City', 'Month'. You can override
+    ## using the `.groups` argument.
+    ## `summarise()` has grouped output by 'region'. You can override using the
+    ## `.groups` argument.
+
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+- **Key Findings**:
+  - The total number of deaths ranges from **400,000-350,000** deaths a
+    month
+  - The total number of pneumonia & influenza deaths range from
+    **30,000-16,000**
+  - Controling for flu season doesn’t significantly alter the
+    seasonality of mortality.
+- **Conclusion for \#6**:
+  - The amount of pneumonia & influenza deaths varies between age groups
+    but the overall variation between the two charts is minimal and
+    still shows similar seasonal trends.
+
+## Conclusions
+
+Our findings support the idea that weather and seasons have a
+significant impact on general mortality, with mortality rates trending
+higher in the winter and lower in the summer for most age groups and
+correlating well with temperature. However, we found that the warmest
+areas in our data set experienced similar seasonal trends as colder
+regions so much of the seasonal signal may be strictly due to changes in
+human activities throughout the year. It should be stated that many of
+these changes in activity are or were themselves informed by the
+weather.
+
+When investigating extreme weather events, we found that heat waves were
+associated with higher than average mortality while extreme cold was
+associated with lower than average mortality, which suggests that while
+winter weather is generally stressful for the population, more extreme
+cold by itself does not currently contribute to increasing mortality,
+possibly because people tend to take reasonable steps to protect
+themselves during cold events. On the other hand, while summer heat is
+associated with lower levels of general mortality, extreme heat was
+associated with above average mortality.
+
+We also found that pneumonia and respiratory illness does not have a
+large impact on the seasonality of deaths, despite making up a notable
+proportion of all deaths.
 
 ## References
 
