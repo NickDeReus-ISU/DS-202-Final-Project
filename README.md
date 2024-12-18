@@ -131,8 +131,7 @@ break up the larger dataset by climate region for selection and further
 comparison.
 
 <figure>
-<img
-src="https://github.com/NickDeReus-ISU/DS-202-Final-Project/blob/main/Supporting%20Materials/Climate%20Zones%20Map.jpg"
+<img src="Supporting%20Materials/Climate%20Zones%20Map.jpg"
 alt="alt text" />
 <figcaption aria-hidden="true">alt text</figcaption>
 </figure>
@@ -439,6 +438,16 @@ the others.
 
 ### Effects of Extreme Weather Events
 
+# \<\<\<\<\<\<\< HEAD
+
+### Relative Vulnerability to Weather Events by Region
+
+**Specific question \#5:** Define which regions are most affected by
+certain types of weather? (Which most vulnerable to heat waves and
+extreme cold)
+
+> > > > > > > 44ef3589764ed86cb2deda46397e9dba2fba0cc9
+
     ## `summarise()` has grouped output by 'region', 'City'. You can override using
     ## the `.groups` argument.
     ## `summarise()` has grouped output by 'region'. You can override using the
@@ -450,17 +459,17 @@ the others.
     ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
     ## generated.
 
-![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
     ## `summarise()` has grouped output by 'region'. You can override using the
     ## `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-18-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
 
     ## `summarise()` has grouped output by 'region'. You can override using the
     ## `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-18-3.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-19-3.png)<!-- -->
 
 #### Heat Waves and Extreme Cold Events
 
@@ -478,14 +487,14 @@ We show that despite increased general mortality in the winter and
 reduced general mortality in the summer, that Heat Waves are strongly
 associated with an increase from mean mortality while extreme cold is
 associated with a decrease.
-![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
-
 ![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
 - **Key Findings**:
   - **Heat Waves** are associated with a 3.45% increase in mortality
     average
-  - In total **Extreme Cold** average deaths is lower by around **22%**
+  - In total **Extreme Cold** average deaths is lower by around **1%**
     difference
   - The cities in **Region 2** have no extreme cold events
   - The cities in **Region 6** have no extreme heat events
@@ -503,7 +512,7 @@ associated with a decrease.
     ## `summarise()` has grouped output by 'region', 'City', 'Month'. You can override
     ## using the `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
     ## Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
     ## dplyr 1.1.0.
@@ -518,8 +527,8 @@ associated with a decrease.
     ## `summarise()` has grouped output by 'region'. You can override using the
     ## `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 ![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 - **Key Findings**:
   - The total number of deaths ranges from **400,000-350,000** deaths a

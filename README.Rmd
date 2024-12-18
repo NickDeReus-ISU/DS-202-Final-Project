@@ -129,7 +129,7 @@ variables:
 The US Department of Energy released a map breaking the US into regions at the county level based upon the climate control needs of people in different areas of the nation. Each region is numbered from 1-8, 1 being the hottest and 8 being the coolest. This mapping was selected to help break up the larger dataset by climate region for selection and further comparison.
 
 
-![alt text](https://github.com/NickDeReus-ISU/DS-202-Final-Project/blob/main/Supporting%20Materials/Climate%20Zones%20Map.jpg)
+![alt text](Supporting Materials/Climate Zones Map.jpg)
 
 
 ### Data Preperation
@@ -658,7 +658,7 @@ allData %>% filter(!is.na(TAVG)) %>% group_by(City, Year, Week) %>% mutate(
 
 - **Key Findings**:
   - **Heat Waves** are associated with a 3.45% increase in mortality average
-  - In total **Extreme Cold** average deaths is lower by around **22%** difference
+  - In total **Extreme Cold** average deaths is lower by around **1%** difference
   - The cities in **Region 2** have no extreme cold events
   - The cities in **Region 6** have no extreme heat events 
     
