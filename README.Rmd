@@ -478,6 +478,11 @@ allData %>% filter(!is.na(`All.Deaths`)) %>% group_by(City, Month) %>% pivot_lon
 ### Relative Vulnerability to Weather Events by Region
 
 **Specific question #5:** Define which regions are most affected by certain types of weather? (Which most vulnerable to heat waves and extreme cold)
+```{r}
+#reading in data
+data_main <- read.csv("Data Files/combined_TAVGxMortality_Data.csv")
+```
+
 
 ```{r}
 # Define thresholds for heat waves and extreme cold
