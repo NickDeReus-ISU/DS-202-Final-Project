@@ -438,16 +438,6 @@ the others.
 
 ### Effects of Extreme Weather Events
 
-# \<\<\<\<\<\<\< HEAD
-
-### Relative Vulnerability to Weather Events by Region
-
-**Specific question \#5:** Define which regions are most affected by
-certain types of weather? (Which most vulnerable to heat waves and
-extreme cold)
-
-> > > > > > > 44ef3589764ed86cb2deda46397e9dba2fba0cc9
-
     ## `summarise()` has grouped output by 'region', 'City'. You can override using
     ## the `.groups` argument.
     ## `summarise()` has grouped output by 'region'. You can override using the
@@ -459,17 +449,17 @@ extreme cold)
     ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
     ## generated.
 
-![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
     ## `summarise()` has grouped output by 'region'. You can override using the
     ## `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-18-2.png)<!-- -->
 
     ## `summarise()` has grouped output by 'region'. You can override using the
     ## `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-19-3.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-18-3.png)<!-- -->
 
 #### Heat Waves and Extreme Cold Events
 
@@ -487,9 +477,10 @@ We show that despite increased general mortality in the winter and
 reduced general mortality in the summer, that Heat Waves are strongly
 associated with an increase from mean mortality while extreme cold is
 associated with a decrease.
-![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
-![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 - **Key Findings**:
   - **Heat Waves** are associated with a 3.45% increase in mortality
@@ -512,7 +503,7 @@ associated with a decrease.
     ## `summarise()` has grouped output by 'region', 'City', 'Month'. You can override
     ## using the `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
     ## Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
     ## dplyr 1.1.0.
@@ -527,8 +518,24 @@ associated with a decrease.
     ## `summarise()` has grouped output by 'region'. You can override using the
     ## `.groups` argument.
 
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+    ## # A tibble: 24 × 3
+    ##    Month type      Anomaly
+    ##    <int> <chr>       <dbl>
+    ##  1     1 deathsZ    0.106 
+    ##  2     1 deathsNoF  0.0942
+    ##  3     2 deathsZ    0.0732
+    ##  4     2 deathsNoF  0.0608
+    ##  5     3 deathsZ    0.0691
+    ##  6     3 deathsNoF  0.0567
+    ##  7     4 deathsZ    0.0185
+    ##  8     4 deathsNoF  0.0141
+    ##  9     5 deathsZ   -0.0206
+    ## 10     5 deathsNoF -0.0184
+    ## # ℹ 14 more rows
+
 ![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
-![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 - **Key Findings**:
   - The total number of deaths ranges from **400,000-350,000** deaths a

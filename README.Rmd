@@ -3,12 +3,12 @@ title: "Analysis of the Effects of Weather on Mortality in Metropolitan Areas"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, echo = FALSE, include = FALSE}
 library(ggplot2)
 library(dplyr)
 library(readr)
 library(tidyverse)
-knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = F, messages = FALSE, results = "hide")
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = F, messages = FALSE)
 ```
 
 Madhu Avula, Nick DeReus, Jacob Johnson, Brianna Norman
@@ -500,18 +500,6 @@ allData %>% filter(!is.na(`All.Deaths`)) %>% group_by(City, Month) %>% pivot_lon
 
 ### Effects of Extreme Weather Events
 
-<<<<<<< HEAD
-=======
-### Relative Vulnerability to Weather Events by Region
-
-**Specific question #5:** Define which regions are most affected by certain types of weather? (Which most vulnerable to heat waves and extreme cold)
-```{r}
-#reading in data
-data_main <- read.csv("Data Files/combined_TAVGxMortality_Data.csv")
-```
-
->>>>>>> 44ef3589764ed86cb2deda46397e9dba2fba0cc9
-
 ```{r}
 # Define thresholds for heat waves and extreme cold
 heat_wave_threshold <- 85  # Threshold for heat wave (in degrees Fahrenheit)
@@ -613,6 +601,7 @@ ggplot(data_summary_extreme_cold, aes(x = Week, y = All.Deaths, color = as.facto
 For this section we compare the impact of individual events against the average (expected) morality for the time of the event. To do this we group all events by city and week, find the mean mortality across the years of the data set for each week. Then we define heat wave and extreme cold conditions, weeks with an Average Temperature at or above 85 degrees and weeks with an average temperature at or below 20 degrees and tag such events. We then find the deviation from the mean as a proportion for each such event by city. The figures below are the means of these deviations.
 
 We show that despite increased general mortality in the winter and reduced general mortality in the summer, that Heat Waves are strongly associated with an increase from mean mortality while extreme cold is associated with a decrease.
+
 ```{r}
 # Mark entries by normal or extreme weather condition
 allData %>% filter(!is.na(TAVG)) %>% group_by(City, Year, Week) %>% mutate(
