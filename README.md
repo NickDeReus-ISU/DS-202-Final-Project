@@ -554,26 +554,31 @@ associated with a decrease.
 Our findings support the idea that weather and seasons have a
 significant impact on general mortality, with mortality rates trending
 higher in the winter and lower in the summer for most age groups and
-correlating well with temperature. However, we found that the warmest
-areas in our data set experienced similar seasonal trends as colder
-regions so much of the seasonal signal may be strictly due to changes in
-human activities throughout the year. It should be stated that many of
-these changes in activity are or were themselves informed by the
-weather.
+correlating well with seasonal temperature changes overall. However, we
+found that the warmest areas in our data set experienced similar
+seasonal trends as colder regions, so we suspect that much of the
+seasonal signal may be strictly due to changes in human activities
+throughout the year. It should be stated that many of these changes in
+activity are or were themselves informed by the weather in most places.
 
 When investigating extreme weather events, we found that heat waves were
 associated with higher than average mortality while extreme cold was
 associated with lower than average mortality, which suggests that while
 winter weather is generally stressful for the population, more extreme
 cold by itself does not currently contribute to increasing mortality,
-possibly because people tend to take reasonable steps to protect
-themselves during cold events. On the other hand, while summer heat is
-associated with lower levels of general mortality, extreme heat was
-associated with above average mortality.
+possibly because people tend to take stronger steps to protect
+themselves during exceptional cold events. On the other hand, while
+summer heat is associated with lower levels of general mortality,
+extreme heat was associated with increases in mortality. These dynamics
+call for deeper research.
 
 We also found that pneumonia and respiratory illness does not have a
 large impact on the seasonality of deaths, despite making up a notable
-proportion of all deaths.
+proportion of all deaths. We weren’t quite sure what to make of this,
+perhaps respiratory illness lurks in the background of the higher
+general mortality (influencing higher mortality indirectly) or perhaps
+the higher level of winter mortality due to respiratory illness is
+related to some other hidden factor causing the seasonal signal.
 
 ## References
 
