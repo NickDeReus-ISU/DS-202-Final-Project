@@ -304,7 +304,7 @@ allData %>% filter(!is.na(`TAVG`)) %>% group_by(Month) %>% summarize(
   ggplot(aes(x = Month %>% factor(), y = Avg, fill = Avg)) + geom_bar(stat = 'identity') + ggtitle('Average Temperature by Month') + scale_fill_gradient(low = "pink", high = "darkred" ) + ylab("Average Temperature") + xlab("Month") + theme(legend.position = "none")
 ```
 
-When we explore seasons regionally, we find that region 2 is the warmest year round, but summer temperatures are remarkably similar in all 6 regions, sitting between 73 and 82 degrees in July while winters see a range from 60 in region 2 and 28 in region 6 in January.
+When we explore seasons regionally, we find that region 2 is the warmest year round, but summer temperatures are remarkably similar in all 6 regions, sitting between 73 and 82 degrees in July while winters see a range from 60 in region 2 and 18 in region 6 in January.
 
 ```{r}
 allData %>% filter(!is.na(`TAVG`)) %>% group_by(region, Month) %>% summarize(
@@ -429,8 +429,7 @@ ggplot(ourCitiesData, aes(x=TMAX_Mean, weight=All.Deaths)) + geom_histogram(bins
   - The **45–64 years** age group is the second most affected, with a significant but smaller share.
   - Younger age groups, including **<1 year**, **1–24 years**, and **25–44 years**, have considerably lower mortality percentages.
 - **Conclusion**:
-  - Older adults (**65+ years**) are the most vulnerable group, indicating a need for targeted health interventions.
-  - The **45–64 years** group also requires attention, but with lower priority compared to seniors.
+  - Older adults (**65+ years**) are likely the most vulnerable group, generally speaking because of their far greater general mortality compared to other age groups.
   
 ```{r}
 # Summarize total deaths by age group
@@ -450,9 +449,9 @@ barplot(percent_deaths, names.arg = c("<1 year", "1-24 years", "25-44 years", "4
 
 For this section we normalize the data by breaking it up by city and age group, finding the mean mortality rate of each age group in each city and then finding the average deviation from that mean as a proportion. In this way we can demonstrate the differences in strength of seasonal signals on the mortality in each age group.
 
-We show that older age groups are the more highly impacted by seasonal signals, seeing greatly increased mortality rates in the winter compared to the summer months. This increase in mortality could be due to cold weather stressing the body, accidents related to winter weather, seasonal respiratory illness, reduced sunlight and increased sedentary and indoor living, or other changes in seasonal behavior. Later on, we explore the effects of extreme heat and cold on mortality.
+We show that older age groups are more highly impacted by seasonal signals, seeing greatly increased mortality rates in the winter compared to the summer months. This increase in mortality could be due to cold weather stressing the body, accidents related to winter weather, seasonal respiratory illness, reduced sunlight and increased sedentary and indoor living, or other changes in seasonal behavior. Later on, we explore the effects of extreme heat and cold on mortality.
 
-Interestingly, young people between the ages of 1 and 24 see the opposite trend as all older age groups. Their greatest mortality rates occur during the three summer months, which correlates well with school scheduling. We hypothesize that this increase is due mostly due to accidents while student age people are out of school and unsupervised, but that is beyond the scope of this paper.
+Interestingly, young people between the ages of 1 and 24 see the opposite trend as all older age groups. Their greatest mortality rates occur during the three summer months, which correlates well with school scheduling. We hypothesize that this increase is mostly due to accidents while students are out of school and unsupervised, but that is beyond the scope of this paper.
 
 We would also like to point out that in the regional breakdown, this increase in mortality for young people is much weaker in region 2 than the others.
 
@@ -574,7 +573,7 @@ ggplot(data_summary_heat_wave, aes(x = Week, y = All.Deaths, color = as.factor(r
   geom_line(size = 1) +
   scale_color_manual(values = custom_colors) +
   theme_minimal() +
-  labs(title = "All Deaths by Week and Region (During extreme cold)",
+  labs(title = "All Deaths by Week and Region (During extreme heat)",
        x = "Week",
        y = "All.Deaths",
        color = "Region")
@@ -725,11 +724,11 @@ df2
 
 ## Conclusions
 
-Our findings support the idea that weather and seasons have a significant impact on general mortality, with mortality rates trending higher in the winter and lower in the summer for most age groups and correlating well with seasonal temperature changes overall. However, we found that the warmest areas in our data set experienced similar seasonal trends as colder regions, so we suspect that much of the seasonal signal may be strictly due to changes in human activities throughout the year. It should be stated that many of these changes in activity are or were themselves informed by the weather in most places.
+Our findings support the hypothesis that weather and seasons have a significant impact on general mortality, with mortality rates trending higher in the winter and lower in the summer for most age groups and correlating well with seasonal temperature changes overall. However, we found that the warmest areas in our data set experienced similar seasonal trends as colder regions, so we suspect that much of the seasonal signal may be strictly due to changes in human activities throughout the year. It should be stated that many of these changes in activity are or were themselves informed by the weather in most places.
 
-When investigating extreme weather events, we found that heat waves were associated with higher than average mortality while extreme cold was associated with lower than average mortality, which suggests that while winter weather is generally stressful for the population, more extreme cold by itself does not currently contribute to increasing mortality, possibly because people tend to take stronger steps to protect themselves during exceptional cold events. On the other hand, while summer heat is associated with lower levels of general mortality, extreme heat was associated with increases in mortality. These dynamics call for deeper research.
+When investigating extreme weather events, we found that heat waves were associated with higher than average mortality while extreme cold was associated with lower than average mortality for the season in which the events occurred. These findings suggest that while the winter season is generally stressful for the population, more extreme cold by itself does not typically contribute to increasing mortality, possibly because people tend to take stronger steps to protect themselves during exceptional cold events. On the other hand, while summer heat is associated with lower levels of general mortality, extreme heat was associated with increases in mortality. These dynamics call for deeper research but are corroborated by NOAA reported extreme weather deaths caused by extreme weather which also show heat waves as the greater danger compared to extreme cold.
 
-We also found that pneumonia and respiratory illness does not have a large impact on the seasonality of deaths, despite making up a notable proportion of all deaths. We weren't quite sure what to make of this, perhaps respiratory illness lurks in the background of the higher general mortality (influencing higher mortality indirectly) or perhaps the higher level of winter mortality due to respiratory illness is related to some other hidden factor causing the seasonal signal.
+We also found that pneumonia and respiratory illness does not have a large impact on the seasonality of deaths, despite making up a significant proportion of all deaths. We weren't quite sure what to make of this, perhaps respiratory illness lurks in the background of the higher general mortality (influencing higher mortality indirectly) or perhaps the higher level of winter mortality due to respiratory illness is related to some other hidden factor causing the seasonal signal.
 
 ## References
 "Deaths in 122 US Cities, 1962-2016", CDC, <https://data.cdc.gov/dataset/Deaths-in-122-U-S-cities-1962-2016-122-Cities-Mort/mr8w-325u/about_data>
