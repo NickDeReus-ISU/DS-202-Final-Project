@@ -132,8 +132,12 @@ comparison.
 
 <figure>
 <img src="Supporting%20Materials/Climate%20Zones%20Map.jpg"
-alt="alt text" />
-<figcaption aria-hidden="true">alt text</figcaption>
+alt="A map of the United States broken up into 6 regions based on climate as well as two sub-regions. The south tends towards lower numbered regions, while the east side of the country is moist and the west is mostly dry. The west coast has a marine rather than dry climate" />
+<figcaption aria-hidden="true">A map of the United States broken up into
+6 regions based on climate as well as two sub-regions. The south tends
+towards lower numbered regions, while the east side of the country is
+moist and the west is mostly dry. The west coast has a marine rather
+than dry climate</figcaption>
 </figure>
 
 ### Data Preperation
@@ -291,9 +295,6 @@ When charted by region, we can see that the increase in average
 temperatures is felt across all climate regions, but is most obvious in
 Region 6, which is the coolest region.
 
-    ## `summarise()` has grouped output by 'region'. You can override using the
-    ## `.groups` argument.
-
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 #### Seasonality of Temperature
@@ -307,10 +308,8 @@ July.
 When we explore seasons regionally, we find that region 2 is the warmest
 year round, but summer temperatures are remarkably similar in all 6
 regions, sitting between 73 and 82 degrees in July while winters see a
-range from 60 in region 2 and 18 in region 6 in January.
-
-    ## `summarise()` has grouped output by 'region'. You can override using the
-    ## `.groups` argument.
+range in mean temperatures from 60 in region 2 to 18 in region 6 in
+January.
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -330,10 +329,10 @@ When we break down the data regionally we can see that colder regions
 have more highly seasonal effects on mortality, but even very warm
 regions still suffer higher mortality in the winter months.
 
-We hypothesize that there are behavioral factors behind the increased
-winter mortality, but we aren’t able to explore that here. At the very
-least we can assume that weather cannot be the only, or even the most
-major, factor behind these findings.
+This leads us to hypothesize that there are behavioral factors behind
+the increased winter mortality, but we aren’t able to explore that here.
+At the very least we can assume that seasonal weather conditions cannot
+be the only, or even the most major, factor behind these findings.
 
 ![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
@@ -345,15 +344,10 @@ days with high maximum temperatures. It is expected that colder regions
 will see higher mortality counts in lower temperatures when observed
 outside of the other regions. \#### Plot of the mean of the minimum
 monthly temperature plotted against the total deaths occurring at those
-temperatures
-
-    ## Warning: Removed 145 rows containing non-finite outside the scale range
-    ## (`stat_bin()`).
-
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- --> Region 2
-sees the highest death counts at maximum temperatures near 90, with
-death counts sharply increasing as the max temperature approaches that
-value. This region’s mortality rates do not seem as affected by
+temperatures ![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+Region 2 sees the highest death counts at maximum temperatures near 90,
+with death counts sharply increasing as the max temperature approaches
+that value. This region’s mortality rates do not seem as affected by
 temperatures below 35, likely due to a generally higher climate and not
 seeing temperatures that low. Region 6 confirms the earlier held
 suspicion of a colder climate holding a higher mortality rate at lower
@@ -362,15 +356,9 @@ rate spikes: One where the max temperature approaches 75, and another
 where it is close to 30. However, the mortality rate seems to be fairly
 consistent at minimum temperatures between 35 and 60 in region 6
 
-    ## Warning: Removed 138 rows containing non-finite outside the scale range
-    ## (`stat_bin()`).
-
 ![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- --> Plot of the
 mean of the maximum monthly temperature plotted against the total deaths
 occurring at those temperatures, grouped by Region
-
-    ## Warning: Removed 142 rows containing non-finite outside the scale range
-    ## (`stat_bin()`).
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- --> Plot of the
 mean of the minimum monthly temperature plotted against the total deaths
@@ -386,9 +374,9 @@ occurring at those temperatures
   - Younger age groups, including **\<1 year**, **1–24 years**, and
     **25–44 years**, have considerably lower mortality percentages.
 - **Conclusion**:
-  - Older adults (**65+ years**) are likely the most vulnerable group,
-    generally speaking because of their far greater general mortality
-    compared to other age groups.
+  - Older adults (**65+ years**) are likely the group which will
+    dominate mortality trends throughout, due to making up the largest
+    portion of general mortality.
 
 ![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
@@ -419,46 +407,12 @@ We would also like to point out that in the regional breakdown, this
 increase in mortality for young people is much weaker in region 2 than
 the others.
 
-    ## Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
-    ## ℹ Please use `all_of()` or `any_of()` instead.
-    ##   # Was:
-    ##   data %>% select(age_groups)
-    ## 
-    ##   # Now:
-    ##   data %>% select(all_of(age_groups))
-    ## 
-    ## See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
-
 ![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 ![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ### Effects of Extreme Weather Events
 
-    ## `summarise()` has grouped output by 'region', 'City'. You can override using
-    ## the `.groups` argument.
-    ## `summarise()` has grouped output by 'region'. You can override using the
-    ## `.groups` argument.
-
-    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-    ## ℹ Please use `linewidth` instead.
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
-
-![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
-
-    ## `summarise()` has grouped output by 'region'. You can override using the
-    ## `.groups` argument.
-
-![](README_files/figure-gfm/unnamed-chunk-18-2.png)<!-- -->
-
-    ## `summarise()` has grouped output by 'region'. You can override using the
-    ## `.groups` argument.
-
-![](README_files/figure-gfm/unnamed-chunk-18-3.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-18-2.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-18-3.png)<!-- -->
 
 #### Heat Waves and Extreme Cold Events
 
@@ -491,49 +445,9 @@ associated with a decrease.
 
 ### The Impact of Flu Season
 
-    ## Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
-    ## dplyr 1.1.0.
-    ## ℹ Please use `reframe()` instead.
-    ## ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
-    ##   always returns an ungrouped data frame and adjust accordingly.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
-
-    ## `summarise()` has grouped output by 'region', 'City', 'Month'. You can override
-    ## using the `.groups` argument.
-
 ![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
-    ## Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
-    ## dplyr 1.1.0.
-    ## ℹ Please use `reframe()` instead.
-    ## ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
-    ##   always returns an ungrouped data frame and adjust accordingly.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
-
-    ## `summarise()` has grouped output by 'region', 'City', 'Month'. You can override
-    ## using the `.groups` argument.
-    ## `summarise()` has grouped output by 'region'. You can override using the
-    ## `.groups` argument.
-
 ![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
-
-    ## # A tibble: 24 × 3
-    ##    Month type      Anomaly
-    ##    <int> <chr>       <dbl>
-    ##  1     1 deathsZ    0.106 
-    ##  2     1 deathsNoF  0.0942
-    ##  3     2 deathsZ    0.0732
-    ##  4     2 deathsNoF  0.0608
-    ##  5     3 deathsZ    0.0691
-    ##  6     3 deathsNoF  0.0567
-    ##  7     4 deathsZ    0.0185
-    ##  8     4 deathsNoF  0.0141
-    ##  9     5 deathsZ   -0.0206
-    ## 10     5 deathsNoF -0.0184
-    ## # ℹ 14 more rows
-
 ![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
 - **Key Findings**:
@@ -543,7 +457,7 @@ associated with a decrease.
     **30,000-16,000**
   - Controling for flu season doesn’t significantly alter the
     seasonality of mortality.
-- **Conclusion for \#6**:
+- **Conclusions on The Impacts of Influenza**:
   - The amount of pneumonia & influenza deaths varies between age groups
     but the overall variation between the two charts is minimal and
     still shows similar seasonal trends.

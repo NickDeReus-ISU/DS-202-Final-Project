@@ -37,8 +37,8 @@ data_main <- read.csv("Data Files/combined_TAVGxMortality_Data.csv")
 
 ```{r}
 # Define thresholds for heat waves and extreme cold
-heat_wave_threshold <- 90  # Threshold for heat wave (in degrees Fahrenheit)
-extreme_cold_threshold <- 15  # Threshold for extreme cold (in degrees Fahrenheit)
+heat_wave_threshold <- 85  # Threshold for heat wave (in degrees Fahrenheit)
+extreme_cold_threshold <- 20  # Threshold for extreme cold (in degrees Fahrenheit)
 
 # Filter data for heat waves, extreme cold, normal conditions(temperatures between the thresholds)
 heat_wave_data <- data_main %>%
@@ -171,7 +171,7 @@ ggplot(mortality_diff, aes(x = Condition, y = Difference, fill = Condition)) +
 
 ```{r}
 # Calculate average mortality during normal conditions, grouped by city
-normal_mortality <- normal_data %>%
+normal_mortality <- normal_data %>% filter((!City == "Utica")) %>%
   group_by(City) %>%
   summarise(avg_deaths_normal = mean(All.Deaths, na.rm = TRUE))
 
@@ -190,8 +190,8 @@ mortality_diff <- normal_mortality %>%
   left_join(heat_wave_mortality, by = "City") %>%
   left_join(extreme_cold_mortality, by = "City") %>%
   mutate(
-    heat_wave_diff = (avg_deaths_heat_wave / avg_deaths_normal),
-    extreme_cold_diff = (avg_deaths_extreme_cold / avg_deaths_normal))
+    heat_wave_diff = ((avg_deaths_heat_wave - avg_deaths_normal) / avg_deaths_normal),
+    extreme_cold_diff = ((avg_deaths_extreme_cold - avg_deaths_normal) / avg_deaths_normal))
 
 mortality_diff
 

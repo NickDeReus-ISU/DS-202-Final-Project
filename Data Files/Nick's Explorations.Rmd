@@ -464,9 +464,9 @@ df2 %>% filter(!is.na(TAVG)) %>% group_by(City, Year, Week) %>% mutate(
   mutate(
     normalized = (`All Deaths` - mean_deaths) / mean_deaths
     ) %>% 
-  filter(!is.na(normalized)) %>% group_by(TempCondition) %>% reframe(
+  filter(!is.na(normalized)) %>% group_by(region, TempCondition) %>% reframe(
   normalized = mean(normalized)
-  ) %>% ggplot(aes(x = TempCondition, y = normalized, fill = TempCondition)) + geom_bar(stat = 'identity', position = 'dodge')
+  ) %>% ggplot(aes(x = TempCondition, y = normalized, fill = TempCondition)) + geom_bar(stat = 'identity', position = 'dodge') + labs(title = "Mortality Anomaly During Extreme Temperature Conditions", y = "Percent Change vs Expected Death Rate") + facet_wrap('region')
 
 
 ```

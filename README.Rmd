@@ -8,7 +8,7 @@ library(ggplot2)
 library(dplyr)
 library(readr)
 library(tidyverse)
-knitr::opts_chunk$set(echo = FALSE, error = FALSE, warnings = F, messages = FALSE)
+knitr::opts_chunk$set(echo = F, error = F, warning = F, message = F)
 ```
 
 Madhu Avula, Nick DeReus, Jacob Johnson, Brianna Norman
@@ -129,7 +129,7 @@ variables:
 The US Department of Energy released a map breaking the US into regions at the county level based upon the climate control needs of people in different areas of the nation. Each region is numbered from 1-8, 1 being the hottest and 8 being the coolest. This mapping was selected to help break up the larger dataset by climate region for selection and further comparison.
 
 
-![alt text](Supporting Materials/Climate Zones Map.jpg)
+![A map of the United States broken up into 6 regions based on climate as well as two sub-regions. The south tends towards lower numbered regions, while the east side of the country is moist and the west is mostly dry. The west coast has a marine rather than dry climate](Supporting Materials/Climate Zones Map.jpg)
 
 
 ### Data Preperation
@@ -304,7 +304,7 @@ allData %>% filter(!is.na(`TAVG`)) %>% group_by(Month) %>% summarize(
   ggplot(aes(x = Month %>% factor(), y = Avg, fill = Avg)) + geom_bar(stat = 'identity') + ggtitle('Average Temperature by Month') + scale_fill_gradient(low = "pink", high = "darkred" ) + ylab("Average Temperature") + xlab("Month") + theme(legend.position = "none")
 ```
 
-When we explore seasons regionally, we find that region 2 is the warmest year round, but summer temperatures are remarkably similar in all 6 regions, sitting between 73 and 82 degrees in July while winters see a range from 60 in region 2 and 18 in region 6 in January.
+When we explore seasons regionally, we find that region 2 is the warmest year round, but summer temperatures are remarkably similar in all 6 regions, sitting between 73 and 82 degrees in July while winters see a range in mean temperatures from 60 in region 2 to 18 in region 6 in January.
 
 ```{r}
 allData %>% filter(!is.na(`TAVG`)) %>% group_by(region, Month) %>% summarize(
@@ -356,7 +356,7 @@ myCitiesList <- c('Miami', 'Fresno', 'Wichita', 'Colorado Springs')
 
 When we break down the data regionally we can see that colder regions have more highly seasonal effects on mortality, but even very warm regions still suffer higher mortality in the winter months.
 
-We hypothesize that there are behavioral factors behind the increased winter mortality, but we aren't able to explore that here. At the very least we can assume that weather cannot be the only, or even the most major, factor behind these findings.
+This leads us to hypothesize that there are behavioral factors behind the increased winter mortality, but we aren't able to explore that here. At the very least we can assume that seasonal weather conditions cannot be the only, or even the most major, factor behind these findings.
 
 ```{R}
 ### Filter data down to focused cities
@@ -429,7 +429,7 @@ ggplot(ourCitiesData, aes(x=TMAX_Mean, weight=All.Deaths)) + geom_histogram(bins
   - The **45–64 years** age group is the second most affected, with a significant but smaller share.
   - Younger age groups, including **<1 year**, **1–24 years**, and **25–44 years**, have considerably lower mortality percentages.
 - **Conclusion**:
-  - Older adults (**65+ years**) are likely the most vulnerable group, generally speaking because of their far greater general mortality compared to other age groups.
+  - Older adults (**65+ years**) are likely the group which will dominate mortality trends throughout, due to making up the largest portion of general mortality.
   
 ```{r}
 # Summarize total deaths by age group
@@ -705,7 +705,7 @@ df2 <- df2 %>% group_by(City, Month) %>%
     deathsNoF = mean(deathsNoF, na.rm = TRUE)
   ) %>% pivot_longer(cols = c("deathsZ", "deathsNoF"), names_to = "type", values_to = "Anomaly")
 
-df2
+# df2
 
   df2 %>% ggplot(aes(x = as.factor(Month), y = Anomaly, fill = type)) + 
   geom_bar( stat = 'identity', position = 'dodge') +
@@ -718,7 +718,7 @@ df2
   - The total number of pneumonia & influenza deaths range from **30,000-16,000**
   - Controling for flu season doesn't significantly alter the seasonality of mortality. 
 
-- **Conclusion for #6**:
+- **Conclusions on The Impacts of Influenza**:
   - The amount of pneumonia & influenza deaths varies between age groups but the
     overall variation between the two charts is minimal and still shows similar seasonal trends.
 
